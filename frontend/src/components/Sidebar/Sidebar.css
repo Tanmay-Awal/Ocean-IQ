@@ -1,0 +1,165 @@
+.sidebar{
+    min-height: 99vh;
+    display: inline-flex;
+    flex-direction: column;
+    background-color: rgb(0, 10, 15);
+    justify-content: space-between;
+    overflow: hidden;
+    width: 60px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.sidebar:hover{
+    width: 200px;
+}
+
+.sidebar.extended{
+    width: 200px;
+}
+
+.top{
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+}
+
+.menu-imamgee{
+    margin-left: 15px;
+    margin-top: 10px;
+}
+
+.new-chat-plus-icon{
+    width: 14px;
+    background-color: transparent !important;
+    filter: brightness(0) invert(1);
+}
+
+.sidebar img{
+    width: 20px;
+    background-color: rgb(0, 10, 15);
+}
+
+.sidebar menu{
+    display: block;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.sidebar .new-chat{
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background-color:rgb(0, 10, 15);
+    border-radius: 50px;
+    font-size: 14px;
+    color: grey;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar .new-chat p{
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+}
+
+.sidebar:hover .new-chat p{
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.sidebar:hover .new-chat:hover{
+    background-color: #E2E6EB;
+}
+
+.sidebar:hover .new-chat:hover p{
+    color: black !important;
+}
+
+.sidebar .recent{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    color: white;
+}
+
+.sidebar:hover .recent{
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.sidebar .recent-title{
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.sidebar .recent-entry{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    padding-right: 40px;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+}
+
+.sidebar .recent-entry:hover{
+    background-color: #E2E6EB;
+}
+
+.no-recent-chats{
+    padding: 10px;
+    color: white;
+    font-style: italic;
+    text-align: center;
+    margin-right: 25px;
+}
+
+.no-recent-chats p{
+    margin: 0;
+    font-size: 14px;
+}
+
+.sidebar .bottom{
+    display: flex;
+    flex-direction: column;
+
+}
+
+.sidebar .bottom-item{
+    padding-right: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sidebar .bottom-item p{
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar:hover .bottom-item p{
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width:600px){
+    .sidebar{
+        display: none;
+    }
+}
+

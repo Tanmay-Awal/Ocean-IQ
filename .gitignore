@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+venv/
+backend/venv/
+env/
+.env
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Production builds
+dist/
+frontend/dist/
+build/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
