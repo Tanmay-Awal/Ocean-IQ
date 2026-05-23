@@ -1,7 +1,6 @@
-
 import './App.css';
-import Sidebar from './components/Sidebar/Sidebar';
 import Main from './components/Sidebar/Main/Main';
+import Sidebar from './components/Sidebar/Sidebar';
 import { Routes, Route } from 'react-router-dom';
 import UserProfileHeader from './components/UserHeader';
 import Intro from './components/Intro';
@@ -11,8 +10,8 @@ function App() {
     <Routes>
       <Route path="/" element={<UserProfileHeader />} />
       <Route path="/chat" element={
-        <div class="app-container">
-          <Sidebar/>
+        <div className="app-container">
+          <Sidebar />
           <Main />
         </div>
       } />

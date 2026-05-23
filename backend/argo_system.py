@@ -14,15 +14,28 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 import time
 import json
 import os
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import google.generativeai as genai
 
 # Configuration
 EMBED_MODEL = "all-MiniLM-L6-v2"
 CHROMA_PATH = "./chroma_db"
 COLLECTION_NAME = "argo_profiles_metadata"
-OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "llama3"
+GEMINI_MODEL = "gemini-1.5-flash-latest"
 POSTGRES_URL = 'postgresql://neondb_owner:npg_IJSRXYiFGc75@ep-sparkling-butterfly-adch5qkf-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+try:
+    api_key = os.getenv("GEMINI_API_KEY")
+    genai.configure(api_key=api_key)
+    llm_available = True
+except Exception as e:
+    print(f"Error configuring Gemini API: {e}")
 
 ARGO_FLOATS_DATABASE = {
     '1902677': {
@@ -128,23 +141,22 @@ class EnhancedHybridArgoSystem:
             self._test_postgres_connection()
             progress.update(task3, completed=1)
             
-            task4 = progress.add_task("[cyan]Testing Ollama connection...", total=1)
-            self.ollama_available = self._test_ollama_connection()
+            task4 = progress.add_task("[cyan]Testing Gemini LLM connection...", total=1)
+            self.llm_available = self._test_llm_connection()
             progress.update(task4, completed=1)
             
         self._initialize_comprehensive_hardcoded_patterns()
 
-    def _test_ollama_connection(self):
-        """Test Ollama connection."""
+    def _test_llm_connection(self):
+        """Test Gemini LLM connection."""
         try:
-            response = requests.post(OLLAMA_URL, 
-                json={"model": OLLAMA_MODEL, "prompt": "Test", "stream": False}, 
-                timeout=5)
-            if response.status_code == 200:
-                self.console.print(f"[green]Ollama LLM connected ({OLLAMA_MODEL})[/green]")
-                return True
+            model = genai.GenerativeModel(model_name=GEMINI_MODEL)
+            # A simple quick test to verify API key works
+            model.generate_content("test")
+            self.console.print(f"[green]Gemini LLM connected ({GEMINI_MODEL})[/green]")
+            return True
         except Exception as e:
-            self.console.print(f"[yellow]Ollama not available: {e}[/yellow]")
+            self.console.print(f"[yellow]Gemini LLM not available: {e}[/yellow]")
         return False
 
     def _test_postgres_connection(self):
@@ -198,7 +210,7 @@ class EnhancedHybridArgoSystem:
             r'(?:all|available).*floats?.*(?:info|details)': self._handle_floats_summary
         }
 
-    def process_query_hybrid(self, user_query):
+    def process_query_hybrid(self, user_query, chat_memory=None):
         """Enhanced hybrid processing with intelligent preprocessing for flexible matching."""
         query_lower = user_query.lower().strip()
         
@@ -216,7 +228,7 @@ class EnhancedHybridArgoSystem:
                 return handler(user_query)
         
         self.console.print(f"[yellow]Using intelligent reasoning system[/yellow]")
-        return self._enhanced_postgresql_llm_analysis(user_query)
+        return self._enhanced_postgresql_llm_analysis(user_query, chat_memory)
 
     def _normalize_query(self, query):
         """Normalize query to catch more variations."""
@@ -549,29 +561,26 @@ class EnhancedHybridArgoSystem:
         self.collection.add(documents=documents, metadatas=metadatas, ids=ids)
         self.console.print(f"[green]✅ Stored {len(df)} metadata records in vector DB.[/green]")
         
-    def _enhanced_postgresql_llm_analysis(self, user_query):
+    def _enhanced_postgresql_llm_analysis(self, user_query, chat_memory=None):
         """Use LLM to analyze actual PostgreSQL data intelligently."""
         if not self._is_relevant_query(user_query):
-            return "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
+            return "I am here to help you with oceanographic data, ARGO floats, temperature, and salinity analysis. If this is fully out of context, I cannot assist with that!"
         
         relevant_wmos = self._extract_relevant_wmos_from_query(user_query)
         if not relevant_wmos:
             relevant_wmos = list(ARGO_FLOATS_DATABASE.keys())
         
-        filters = self._create_filters_from_query(user_query)
+        filters = self.extract_enhanced_filters_from_query(user_query)
         pg_data = self.get_enhanced_postgres_data(relevant_wmos, filters, limit=8000)
         
-        if 'error' in pg_data:
-            return f"Unable to retrieve data from PostgreSQL: {pg_data['error']}"
-        
-        if pg_data['count'] == 0:
-            return "No data found in PostgreSQL for your query."
+        if 'error' in pg_data or not pg_data.get('data'):
+            return "I couldn't retrieve the necessary data to answer your question. Please try being more specific about the region or parameter."
         
         df = pd.DataFrame(pg_data['data'])
         analysis_context = self._create_intelligent_analysis_context(df, user_query)
         
-        if self.ollama_available:
-            llm_result = self._query_ollama_with_intelligent_context(user_query, analysis_context)
+        if self.llm_available:
+            llm_result = self._query_llm_with_intelligent_context(user_query, analysis_context, chat_memory)
             if llm_result:
                 return llm_result
         
@@ -579,43 +588,22 @@ class EnhancedHybridArgoSystem:
 
     def _is_relevant_query(self, query):
         """Check if query is relevant to oceanographic/ARGO data analysis."""
-        query_lower = query.lower().strip()
-        ocean_terms = [
-            'temperature', 'temp', 'salinity', 'salt', 'ocean', 'sea', 'marine', 'water',
-            'argo', 'float', 'profile', 'depth', 'pressure', 'conductivity', 'oxygen',
-            'arabian', 'bengal', 'indian', 'pacific', 'atlantic', 'basin', 'gulf',
-            'current', 'tide', 'wave', 'thermocline', 'halocline', 'density',
-            'upwelling', 'downwelling', 'circulation', 'eddy', 'front', 'gyre',
-            'latitude', 'longitude', 'coordinate', 'location', 'region', 'area',
-            'data', 'measurement', 'analysis', 'trend', 'change', 'climate',
-            'warm', 'cold', 'hot', 'cool', 'fresh', 'salty', 'deep', 'shallow',
-            'north', 'south', 'east', 'west', 'northern', 'southern', 'eastern', 'western',
-            'compare', 'comparison', 'difference', 'vs', 'versus', 'between',
-            'highest', 'lowest', 'maximum', 'minimum', 'extreme', 'average', 'mean',
-            'range', 'variation', 'variability', 'standard', 'deviation',
-            'year', 'month', 'season', 'annual', 'seasonal', 'temporal', 'time',
-            '2024', '2023', '2022', '2021', '2020', '2019',
-            'wmo', 'station', 'sensor', 'instrument', 'buoy', 'mooring'
-        ]
-        
-        if any(term in query_lower for term in ocean_terms):
-            return True
+        query_lower = query.lower()
         
         irrelevant_patterns = [
-            r'^(hi|hello|hey|good morning|good afternoon|good evening)$',
-            r'^(how are you|what\'s up|sup)$',
-            r'^(thanks|thank you|bye|goodbye)$',
-            r'^(test|testing)$',
-            r'^(what can you do|help|info)$'
+            r'^(hi|hello|hey|good morning|good afternoon|good evening|what can you help|help me|how are you|ok thanks|ok|thanks|thank you).*$'
         ]
         
         for pattern in irrelevant_patterns:
             if re.match(pattern, query_lower):
                 return False
+                
+        ocean_terms = ['temperature', 'salinity', 'ocean', 'sea', 'bay', 'gulf', 'water', 
+                       'float', 'argo', 'profile', 'marine', 'depth', 'warm', 'cold', 'salt']
         
-        if len(query_lower.split()) <= 2 and not any(term in query_lower for term in ocean_terms):
+        if len(query_lower.split()) <= 4 and not any(term in query_lower for term in ocean_terms):
             return False
-        
+            
         return True
     
     def _extract_relevant_wmos_from_query(self, query):
@@ -715,9 +703,16 @@ class EnhancedHybridArgoSystem:
         else:
             return 'general_analysis'
 
-    def _query_ollama_with_intelligent_context(self, user_query, context):
-        """Query Ollama with intelligent context for better answers."""
+    def _query_llm_with_intelligent_context(self, user_query, context, chat_memory=None):
+        """Query Gemini with intelligent context for better answers."""
         query_lower = user_query.lower()
+        
+        memory_str = ""
+        if chat_memory:
+            memory_str = "CHAT HISTORY:\n"
+            for interaction in chat_memory[-3:]:
+                memory_str += f"User: {interaction.get('question', '')}\nAI: {interaction.get('answer', '')}\n"
+            memory_str += "\n"
         
         if 'lowest' in query_lower or 'minimum' in query_lower:
             if 'salinity' in query_lower and 'salinity' in context['parameter_analysis']:
@@ -785,40 +780,25 @@ DATA AVAILABLE: {context['unique_floats']} ARGO floats, {context['total_records'
                 prompt += "\nREGIONAL BREAKDOWN:\n"
                 for wmo, data in context['regional_data'].items():
                     prompt += f"- {data['region']}: {data['records']} records"
-                    if data['avg_temp']:
+                    if data.get('avg_temp'):
                         prompt += f", {data['avg_temp']:.1f}°C avg"
-                    if data['avg_sal']:
+                    if data.get('avg_sal'):
                         prompt += f", {data['avg_sal']:.1f} PSU avg"
                     prompt += "\n"
 
-        prompt += f"""
-Answer in 1-2 conversational sentences with specific data values. Don't just give ranges - identify the actual answer to their question with locations and values."""
+        prompt = memory_str + prompt + f"""
+Answer naturally and directly. If the user is just saying 'thanks' or 'ok', acknowledge it politely based on the CHAT HISTORY. If they ask a data question, use the data provided above. Be concise and conversational."""
 
         try:
-            response = requests.post(
-                OLLAMA_URL,
-                json={
-                    "model": OLLAMA_MODEL,
-                    "prompt": prompt,
-                    "stream": False,
-                    "options": {
-                        "temperature": 0.2,
-                        "top_p": 0.8,
-                        "num_predict": 300
-                    }
-                },
-                timeout=30
-            )
+            model = genai.GenerativeModel(model_name=GEMINI_MODEL)
+            response = model.generate_content(prompt)
+            llm_response = response.text.strip()
             
-            if response.status_code == 200:
-                result = response.json()
-                llm_response = result.get('response', '').strip()
-                
-                if llm_response and len(llm_response) > 50:
-                    return llm_response
+            if llm_response:
+                return llm_response
                     
         except Exception as e:
-            self.console.print(f"[red]LLM failed: {e}[/red]")
+            self.console.print(f"[red]Gemini LLM failed: {e}[/red]")
             return None
         
         return None
@@ -993,6 +973,18 @@ Answer in 1-2 conversational sentences with specific data values. Don't just giv
             return (f"Our network includes {context['unique_floats']} active ARGO floats monitoring "
                     f"the Indian Ocean region with comprehensive oceanographic measurements.")
 
+        elif context.get('regional_data'):
+            regions = [data['region'] for data in context['regional_data'].values()]
+            if len(regions) == 1:
+                region_name = regions[0]
+                data = list(context['regional_data'].values())[0]
+                response = f"Data for {region_name}: "
+                if data.get('avg_temp'): response += f"Average Temperature is {data['avg_temp']:.1f}°C. "
+                if data.get('avg_sal'): response += f"Average Salinity is {data['avg_sal']:.1f} PSU. "
+                return response.strip()
+            elif len(regions) > 1:
+                return f"I found data for multiple regions: {', '.join(regions)}. Please ask about a specific one, or ask for temperature/salinity comparisons!"
+
         else:
             available_info = []
             if 'temperature' in context['parameter_analysis']:
@@ -1001,11 +993,11 @@ Answer in 1-2 conversational sentences with specific data values. Don't just giv
                 available_info.append("salinity")
 
             if available_info:
-                return (f"I have {' and '.join(available_info)} data from {context['unique_floats']} ARGO floats. "
-                        f"Please ask about a specific region (Arabian Sea, Bay of Bengal) or parameter.")
+                return (f"I don't have much knowledge about the specific detail you asked. I currently have {' and '.join(available_info)} data from {context['unique_floats']} ARGO floats. "
+                        f"We will update my knowledge in the near future! For now, please ask about a specific region (Arabian Sea, Bay of Bengal) or parameter.")
             else:
-                return (f"Data is available from {context['unique_floats']} ARGO floats in the region. "
-                        f"Please ask about temperature, salinity, or specific regions like Arabian Sea or Bay of Bengal.")
+                return ("I don't have much knowledge about it right now, and we will update it in the near future! "
+                        "Currently, data is available from ARGO floats in the region. Please ask about temperature, salinity, or specific regions like Arabian Sea or Bay of Bengal.")
 
     def get_enhanced_postgres_data(self, wmo_ids, filters=None, limit=8000):
         """Enhanced PostgreSQL data retrieval with better error handling."""
@@ -1147,15 +1139,15 @@ Answer in 1-2 conversational sentences with specific data values. Don't just giv
 
         return doc
         
-    def query_system(self, user_query):
+    def query_system(self, user_query, chat_memory=None):
         """Main query processing with hybrid approach."""
         self.console.print(Panel(f"[bold]Processing Query:[/bold] {user_query}", border_style="cyan"))
 
         start_time = time.time()
 
         try:
-            response = self.process_query_hybrid(user_query)
-            self.log_ollama_output(user_query, response)
+            response = self.process_query_hybrid(user_query, chat_memory)
+            self.log_llm_output(user_query, response)
             self.console.print(Panel(response, title="[bold blue]Analysis Result[/bold blue]", border_style="blue", expand=False))
 
         except Exception as e:
@@ -1192,12 +1184,12 @@ Answer in 1-2 conversational sentences with specific data values. Don't just giv
             print(f"Error getting raw data for graph: {e}")
             return None
 
-    def log_ollama_output(self, user_query, ollama_response):
-        """Log the last user query and Ollama's response to a history file."""
+    def log_llm_output(self, user_query, llm_response):
+        """Log the last user query and LLM's response to a history file."""
         history = []
-        if os.path.exists("ollama_history.json"):
+        if os.path.exists("llm_history.json"):
             try:
-                with open("ollama_history.json", 'r') as f:
+                with open("llm_history.json", 'r') as f:
                     history = json.load(f)
             except json.JSONDecodeError:
                 pass
@@ -1205,15 +1197,15 @@ Answer in 1-2 conversational sentences with specific data values. Don't just giv
         history.append({
             "timestamp": datetime.now().isoformat(),
             "query": user_query,
-            "response": ollama_response
+            "response": llm_response
         })
 
         history = history[-10:] # Keep only the last 10 interactions
 
-        with open("ollama_history.json", 'w') as f:
+        with open("llm_history.json", 'w') as f:
             json.dump(history, f, indent=4)
 
-        self.console.print(f"[green]✅ Saved latest interaction to ollama_history.json[/green]")
+        self.console.print(f"[green]✅ Saved latest interaction to llm_history.json[/green]")
         
 def main():
     """Main function with enhanced hybrid system."""

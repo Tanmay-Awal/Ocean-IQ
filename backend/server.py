@@ -80,7 +80,7 @@ def chat():
         if is_thinking_mode:
             final_answer = thinking_system.query_system_thinking_mode(user_query, chat_memory)
         else:
-            final_answer = standard_system.query_system(user_query)
+            final_answer = standard_system.query_system(user_query, chat_memory)
 
         return jsonify({'message': final_answer})
 

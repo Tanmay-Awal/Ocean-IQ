@@ -10,17 +10,26 @@ import requests
 import re
 from datetime import datetime, timedelta
 import json
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # --- NEW: Gemini API and History Configuration ---
-GEMINI_MODEL = "gemini-1.5-flash"
-HISTORY_FILE = "ollama_history.json"
+GEMINI_MODEL = "gemini-1.5-flash-latest"
+HISTORY_FILE = "llm_history.json"
 MAX_HISTORY = 10
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 try:
-    genai.configure(api_key="AIzaSyC5ko1NcnysVBs25PoUaf3XrhUfrY-ZK-8")
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("Warning: GEMINI_API_KEY not found in .env")
+    genai.configure(api_key=api_key)
 except Exception as e:
-    print(f"Error configuring Gemini API: {e}. Please ensure GOOGLE_API_KEY environment variable is set.")
+    print(f"Error configuring Gemini API: {e}. Please ensure GEMINI_API_KEY environment variable is set.")
 
 class GeminiThinkingSystem:
     def __init__(self, argo_system_instance):
@@ -35,7 +44,7 @@ class GeminiThinkingSystem:
 *CRITICAL INSTRUCTIONS:*
 1.  *Analyze the provided data:* A list of previous questions and answers is provided.
 2.  *Identify patterns and trends:* Look for repeated topics, variations in response length, or recurring types of questions.
-3.  *Synthesize a summary:* Write a 2-3 sentence summary of the "Ollama history" and the key insights you've gleaned.
+3.  *Synthesize a summary:* Write a 2-3 sentence summary of the "Chat history" and the key insights you've gleaned.
 4.  *End with a forward-looking statement:* Conclude with a suggestion for the next logical step based on your analysis."""
         try:
             model = genai.GenerativeModel(model_name=GEMINI_MODEL, system_instruction=system_prompt)
@@ -131,8 +140,8 @@ class GeminiThinkingSystem:
         self.console.print(Panel(final_answer, title="[bold magenta]Aqua's Deep Analysis[/]", border_style="magenta", expand=False))
         return final_answer
 
-    def log_ollama_output(self, user_query, ollama_response):
-        """Log the last user query and Ollama's response to a history file."""
+    def log_llm_output(self, user_query, llm_response):
+        """Log the last user query and LLM's response to a history file."""
         history = []
         if os.path.exists(HISTORY_FILE):
             try:
@@ -144,7 +153,7 @@ class GeminiThinkingSystem:
         history.append({
             "timestamp": datetime.now().isoformat(),
             "query": user_query,
-            "response": ollama_response
+            "response": llm_response
         })
         
         history = history[-MAX_HISTORY:]
@@ -154,8 +163,8 @@ class GeminiThinkingSystem:
         
         self.console.print(f"[green]✅ Saved latest interaction to {HISTORY_FILE}[/green]")
 
-    def get_ollama_history(self):
-        """Retrieve the Ollama conversation history from file."""
+    def get_llm_history(self):
+        """Retrieve the LLM conversation history from file."""
         if not os.path.exists(HISTORY_FILE):
             return []
         try:
@@ -166,14 +175,14 @@ class GeminiThinkingSystem:
             return []
 
     def analyze_history_with_gemini(self):
-        """Use Gemini to analyze the Ollama history and plot a graph."""
-        history = self.get_ollama_history()
+        """Use Gemini to analyze the LLM history and plot a graph."""
+        history = self.get_llm_history()
         if not history:
-            self.console.print("[yellow]No Ollama history found to analyze.[/yellow]")
+            self.console.print("[yellow]No LLM history found to analyze.[/yellow]")
             return
 
-        history_text = "\n\n".join([f"User: {item['query']}\nOllama: {item['response']}" for item in history])
-        prompt = f"Here is the conversation history with Ollama:\n\n{history_text}\n\nPlease analyze this history and provide a summary."
+        history_text = "\n\n".join([f"User: {item['query']}\nAqua AI: {item['response']}" for item in history])
+        prompt = f"Here is the conversation history:\n\n{history_text}\n\nPlease analyze this history and provide a summary."
         
         with self.console.status("[bold cyan]🧠 Sending history to Gemini for analysis...[/]"):
             analysis = self.ask_gemini_enhanced(prompt)
@@ -182,7 +191,7 @@ class GeminiThinkingSystem:
         self.create_response_graph(history)
 
     def create_response_graph(self, history):
-        """Generate a bar chart of Ollama response lengths."""
+        """Generate a bar chart of LLM response lengths."""
         if not history: return
         
         queries = [item['query'] for item in history]
@@ -192,7 +201,7 @@ class GeminiThinkingSystem:
         fig, ax = plt.subplots(figsize=(10, 6))
         ax.bar(range(len(queries)), response_lengths, color='skyblue')
         ax.set_ylabel('Response Length (Characters)', fontsize=12)
-        ax.set_title('Length of Last 10 Ollama Responses', fontsize=14, fontweight='bold')
+        ax.set_title('Length of Last 10 AI Responses', fontsize=14, fontweight='bold')
         ax.set_xticks(range(len(queries)))
         ax.set_xticklabels([f"Q{i+1}" for i in range(len(queries))])
         plt.xlabel('Query Number (most recent on the right)', fontsize=12)
@@ -203,7 +212,7 @@ class GeminiThinkingSystem:
         plt.tight_layout()
         
         # Save and display the graph
-        graph_path = "ollama_response_graph.png"
+        graph_path = "llm_response_graph.png"
         plt.savefig(graph_path)
         plt.close()
         

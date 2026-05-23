@@ -1,52 +1,52 @@
 [
     {
-        "timestamp": "2025-09-25T00:35:25.334976",
-        "query": "hi",
+        "timestamp": "2026-05-23T12:35:36.555321",
+        "query": "what all you can tell ?",
+        "response": "Unable to retrieve data from PostgreSQL: connection already closed"
+    },
+    {
+        "timestamp": "2026-05-23T12:38:48.086458",
+        "query": "Hi what can you tell me about ?",
+        "response": "I have temperature and salinity data from 2 ARGO floats. Please ask about a specific region (Arabian Sea, Bay of Bengal) or parameter."
+    },
+    {
+        "timestamp": "2026-05-23T12:38:57.523379",
+        "query": "Tell me for both",
+        "response": "I have temperature and salinity data from 2 ARGO floats. Please ask about a specific region (Arabian Sea, Bay of Bengal) or parameter."
+    },
+    {
+        "timestamp": "2026-05-23T12:39:05.899955",
+        "query": "Bay of Bengal",
+        "response": "Data is available from 2 ARGO floats in the region. Please ask about temperature, salinity, or specific regions like Arabian Sea or Bay of Bengal."
+    },
+    {
+        "timestamp": "2026-05-23T12:39:19.463904",
+        "query": "Tell me for bay of bengal",
+        "response": "Data is available from 2 ARGO floats in the region. Please ask about temperature, salinity, or specific regions like Arabian Sea or Bay of Bengal."
+    },
+    {
+        "timestamp": "2026-05-23T12:39:34.806081",
+        "query": "tell me the salinity for bay of bengal ",
+        "response": "Salinity analysis shows values ranging from 0.0 to 35.0 PSU with an average of 34.5 PSU."
+    },
+    {
+        "timestamp": "2026-05-23T12:44:15.503172",
+        "query": "Oh ok",
         "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
     },
     {
-        "timestamp": "2025-09-25T00:35:28.730964",
-        "query": "hi",
-        "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
-    },
-    {
-        "timestamp": "2025-09-25T00:35:31.332216",
-        "query": "hi",
-        "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
-    },
-    {
-        "timestamp": "2025-09-25T00:35:34.699791",
-        "query": "hi",
-        "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
-    },
-    {
-        "timestamp": "2025-09-25T00:35:50.857906",
+        "timestamp": "2026-05-23T12:52:20.680024",
         "query": "Hi",
-        "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
+        "response": "I am here to help you with oceanographic data, ARGO floats, temperature, and salinity analysis. If this is fully out of context, I cannot assist with that!"
     },
     {
-        "timestamp": "2025-09-25T00:37:12.936268",
-        "query": "hi",
-        "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
+        "timestamp": "2026-05-23T12:52:35.100077",
+        "query": "So what can you tell",
+        "response": "I don't have much knowledge about the specific detail you asked. I currently have temperature and salinity data from 2 ARGO floats. We will update my knowledge in the near future! For now, please ask about a specific region (Arabian Sea, Bay of Bengal) or parameter."
     },
     {
-        "timestamp": "2025-09-25T00:37:40.103312",
-        "query": "Lowest salinity",
-        "response": "The lowest salinity found is 33.6 PSU.  Freshest: Southern Indian Ocean shows the freshest water, likely due to river discharge or rainfall."
-    },
-    {
-        "timestamp": "2025-09-25T00:41:32.994292",
-        "query": "hi",
-        "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
-    },
-    {
-        "timestamp": "2025-09-26T14:09:44.730453",
-        "query": "hi",
-        "response": "I'm an ARGO oceanographic data analysis system. Please ask questions about ocean temperature, salinity, ARGO floats, or marine data analysis."
-    },
-    {
-        "timestamp": "2025-09-26T14:10:27.529050",
-        "query": "lowest salinity",
-        "response": "The lowest salinity was found in the Southern Indian Ocean, specifically at a value of 33.6 PSU. This low salinity is likely due to the influence of freshwater inputs from rivers and atmospheric moisture, which can dilute the surrounding seawater."
+        "timestamp": "2026-05-23T12:52:53.164571",
+        "query": "Tell about bay of bengal",
+        "response": "I don't have much knowledge about it right now, and we will update it in the near future! Currently, data is available from ARGO floats in the region. Please ask about temperature, salinity, or specific regions like Arabian Sea or Bay of Bengal."
     }
 ]

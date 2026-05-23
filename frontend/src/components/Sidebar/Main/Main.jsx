@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import './Main.css';
 import { assets } from '../../../assets/assets';
-import chatBg from '../../../assets/172148-846731250_small.mp4';
 import { Context } from '../../../context/Context';
 import flowchatLogo from '../../../assets/floatchat.png';
 
@@ -23,7 +22,6 @@ function Main() {
     } = useContext(Context);
     
     const [isPromptSent, setIsPromptSent] = useState(false);
-    const [showSidebar, setShowSidebar] = useState(false);
     const resultRef = useRef(null);
     const bottomRef = useRef(null);
 
@@ -32,7 +30,7 @@ function Main() {
         onSent();
         setInput('');
         setTimeout(() => {
-            const searchBox = document.querySelector('.search-box');
+            const searchBox = document.querySelector('.search-container');
             if (searchBox) {
                 searchBox.classList.add('expanded');
             }
@@ -47,7 +45,6 @@ function Main() {
 
     const handleThinkingClick = () => {
         toggleThinkingMode();
-        setShowSidebar(false);
     };
 
     useEffect(() => {
@@ -58,120 +55,142 @@ function Main() {
 
     return (
         <div className="main">
-            <video
-                className="main-bg-video"
-                src={chatBg}
-                autoPlay
-                loop
-                muted
-                playsInline
-            />
-            <div className="nav">
-                <img src={flowchatLogo} alt="FlowChat" className="brand-logo" />
+            {/* Top Navigation Pill */}
+            <div className="top-nav-wrapper">
+                <div className="nav-left">
+                    <img src={flowchatLogo} alt="FlowChat" className="brand-logo" />
+                </div>
+                
+                <div className="pill-nav">
+                    <div className="pill-nav-item active" onClick={() => window.location.href='/'}>
+                        <span>Home</span>
+                    </div>
+                </div>
+
+                <div className="nav-right">
+                    <button className="btn-secondary" onClick={newChat}>New Chat</button>
+                    <button className="btn-primary" onClick={handleThinkingClick}>
+                        {isThinkingMode ? "Thinking: ON" : "Thinking: OFF"}
+                    </button>
+                </div>
             </div>
-            <div className="main-container">
-                {showResult ? (
-                    <div className="result" ref={resultRef}>
+
+            <div className={`main-content ${showResult ? 'chat-active' : ''}`}>
+                
+                {!showResult && (
+                    <div className="hero-section">
+                        <div className="geo-pill">
+                            <span className="geo-icon">🌊</span> Now exploring global ocean data
+                        </div>
+                        <h1 className="super-title">
+                            Dive in. Ask it.<br/>
+                            <span className="text-gradient">Explore the Ocean.</span>
+                        </h1>
+                        <p className="super-subtitle">
+                            The AI-powered oceanographic platform built for researchers and enthusiasts. 
+                            Explore ARGO floats, climate impact, and marine life instantly.
+                        </p>
+                    </div>
+                )}
+
+                {showResult && (
+                    <div className="result-container" ref={resultRef}>
                         {conversationHistory.map((chat, index) => (
-                            <div key={index}>
-                                <div className="user-message">
-                                    <p>{chat.question}</p>
+                            <div key={index} className="chat-thread">
+                                <div className="user-message-wrapper">
+                                    <div className="user-message">
+                                        <p>{chat.question}</p>
+                                    </div>
                                 </div>
-                                <div className="ai-response">
-                                    {/* --- NEW LOGIC: Check for image or text response --- */}
-                                    {chat.graph_path ? (
-                                        <img src={`http://localhost:5000/${chat.graph_path}`} alt="Generated Graph" className="generated-graph" />
-                                    ) : (
-                                        <p dangerouslySetInnerHTML={{ __html: chat.answer }}></p>
-                                    )}
+                                <div className="ai-response-wrapper">
+                                    <div className="ai-avatar">
+                                        <img src={assets.gemini_icon} alt="AI" />
+                                    </div>
+                                    <div className="ai-response">
+                                        {chat.graph_path ? (
+                                            <img src={`http://localhost:5000/${chat.graph_path}`} alt="Generated Graph" className="generated-graph" />
+                                        ) : (
+                                            <p dangerouslySetInnerHTML={{ __html: chat.answer }}></p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
                         
                         {loading && (
-                            <div>
-                                <div className="user-message">
-                                    <p>{recentPrompt}</p>
+                            <div className="chat-thread">
+                                <div className="user-message-wrapper">
+                                    <div className="user-message">
+                                        <p>{recentPrompt}</p>
+                                    </div>
                                 </div>
-                                <div className="ai-response">
-                                    {resultData ? (
-                                        <p dangerouslySetInnerHTML={{ __html: resultData }}></p>
-                                    ) : (
-                                        <div className="loader">
-                                            <div className="loader-dot"></div>
-                                            <div className="loader-dot"></div>
-                                            <div className="loader-dot"></div>
-                                            <div className="loader-dot"></div>
-                                        </div>
-                                    )}
+                                <div className="ai-response-wrapper">
+                                    <div className="ai-avatar">
+                                        <img src={assets.gemini_icon} alt="AI" />
+                                    </div>
+                                    <div className="ai-response">
+                                        {resultData ? (
+                                            <p dangerouslySetInnerHTML={{ __html: resultData }}></p>
+                                        ) : (
+                                            <div className="wave-loader">
+                                                <span></span><span></span><span></span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}
-                        <div ref={bottomRef} />
-                    </div>
-                ) : (
-                    <div className="greet">
-                        <p><span>Hello</span></p>
-                        <p className="greet-subtitle">Ask The Ocean Anything</p>
+                        <div ref={bottomRef} className="scroll-anchor" />
                     </div>
                 )}
-            </div>
-            <div className={`main-bottom ${isPromptSent ? 'slide-down' : ''}`}>
-                <div className="search-box">
-                    <img 
-                        src={assets.plus_icon} 
-                        alt="" 
-                        className="plus-icon"
-                        onClick={() => setShowSidebar(!showSidebar)}
-                    />
-                    
-                    {showSidebar && (
-                        <div className="small-sidebar show">
-                            <a href="http://localhost:8501" target="_blank" rel="noopener noreferrer">
-                                <div className="sidebar-option">
-                                    <span className="sidebar-option-text">Streamlit</span>
-                                </div>
-                            </a>
-                            <div className="sidebar-option" onClick={handleThinkingClick}>
-                                <span className="sidebar-option-text">Thinking Mode</span>
-                            </div>
-                        </div>
-                    )}
-                    
-                    {isThinkingMode && (
-                        <div className="thinking-mode-tag">
-                            Thinking Mode
-                            <span className="cut-icon" onClick={toggleThinkingMode}>x</span>
-                        </div>
-                    )}
 
-                    <input
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        value={input}
-                        type="text"
-                        placeholder={
-                            isThinkingMode ? '' :
-                            currentChatIsFull ? 'Memory full - Start new chat' : 
-                            loading ? 'AI is responding...' : 
-                            'Enter A Prompt Here'
-                        }
-                        disabled={loading || currentChatIsFull}
-                    />
-                    
-                    <div className="input-controls">
-                        {loading ? (
-                            <div className="stop-button" onClick={stopGeneration}>
-                                <div className="stop-icon"></div>
-                            </div>
-                        ) : currentChatIsFull ? (
-                            <button className="new-chat-button" onClick={newChat}>
-                                New Chat
-                            </button>
-                        ) : (
-                            input ? <img onClick={handleSend} src={assets.send_icon} alt="" /> : null
-                        )}
+                {/* Centered Search Bar */}
+                <div className={`search-container ${showResult ? 'docked' : ''}`}>
+                    <div className="search-box">
+                        <div className="search-box-left">
+                            <img 
+                                src={assets.plus_icon} 
+                                alt="Add" 
+                                className="action-icon"
+                            />
+                        </div>
+                        
+                        <input
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            value={input}
+                            type="text"
+                            placeholder={
+                                currentChatIsFull ? 'Memory full - Start new chat' : 
+                                loading ? 'Aqua is formulating an answer...' : 
+                                'Describe what you want to explore...'
+                            }
+                            disabled={loading || currentChatIsFull}
+                        />
+                        
+                        <div className="search-box-right">
+                            {loading ? (
+                                <button className="submit-btn stop-btn" onClick={stopGeneration}>
+                                    <div className="stop-square"></div>
+                                </button>
+                            ) : (
+                                <button 
+                                    className={`submit-btn ${input ? 'active' : ''}`} 
+                                    onClick={handleSend}
+                                    disabled={!input || currentChatIsFull}
+                                >
+                                    ↑
+                                </button>
+                            )}
+                        </div>
                     </div>
+                    
+                    {!showResult && (
+                        <div className="prompt-suggestion">
+                            <span className="dot"></span>
+                            "Show me the salinity profile of floats near the Great Barrier Reef..."
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

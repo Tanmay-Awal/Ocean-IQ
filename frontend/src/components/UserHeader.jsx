@@ -1,254 +1,111 @@
-import React from "react";
-import videoSrc5 from "../assets/39393-422737370_small.mp4";
-import pic1 from "../assets/1.jpg";
-import pic2 from "../assets/2.jpg";
-import pic3 from "../assets/3.jpg";
-import flowchatLogo from "../assets/floatchat.png";
+import React, { useEffect } from "react";
 import "./UserHeader.css";
 import { useNavigate } from "react-router-dom";
+import pic3 from "../assets/3.jpg";
 
 const UserProfileHeader = () => {
   const navigate = useNavigate();
-  const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+
+  const scrollToAbout = () => {
+    document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleclick = () => {
-    navigate('/chat');
-  }
+  useEffect(() => {
+    // Add ambient orbs
+    const container = document.querySelector('.landing-hero');
+    if (container) {
+      const orb1 = document.createElement('div');
+      orb1.className = 'ambient-orb orb-1';
+      const orb2 = document.createElement('div');
+      orb2.className = 'ambient-orb orb-2';
+      container.appendChild(orb1);
+      container.appendChild(orb2);
+    }
+  }, []);
+
   return (
-    <>
-      <div className="viewport">
-        {/* Video Background */}
-        <video
-          className="video-bg"
-          src={videoSrc5}
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-
-        {/* Dark Overlay */}
-        <div className="overlay-dark"></div>
-
-        {/* Header at top, centered horizontally */}
-        <div className="header-top-center">
-          <nav className="user-header-nav">
-            <div className="user-header-container">
-              <a className="user-header-logo-link" href="#" aria-label="FlowChat home">
-                <img src={flowchatLogo} alt="FlowChat" className="user-header-logo" />
-              </a>
-
-              <div className="user-header-buttons">
-                <button className="user-header-button" type="button" onClick={() => scrollTo('about')}>About</button>
-                <button className="user-header-button" type="button" onClick={() => scrollTo('aim')}>Our Aim</button>
-              </div>
-            </div>
-          </nav>
+    <div className="brutalist-wrapper">
+      {/* Navigation */}
+      <nav className="fixed-nav">
+        <div className="nav-logo">FLOATCHAT</div>
+        <div className="nav-links">
+          <a href="#capabilities">CAPABILITIES</a>
+          <a href="#about">ABOUT</a>
+          <button className="nav-btn" onClick={() => navigate('/chat')}>LAUNCH CHAT</button>
         </div>
+      </nav>
 
-        {/* Text above buttons */}
-        <div className="hero">
-          <h1 className="hero-title">
-            <span className="line">Explore the Depths.</span><br />
-            <span className="line accent">Understand Our Oceans</span>
-          </h1>
-        </div>
-
-        {/* Buttons above bottom of video */}
-        <div className="cta">
-          <button className="btn btn--chat" onClick={handleclick}>Chat</button>
-          <button 
-            className="btn btn--stream"
-            onClick={() => window.open("http://localhost:8501", "_blank", "noopener,noreferrer")}
+      {/* Hero Section */}
+      <section className="landing-hero">
+        <h1 className="landing-hero-title">
+          <span>OCEANIC</span>
+          <span>INTELLIGENCE</span>
+        </h1>
+        <div className="landing-hero-footer">
+          <p className="hero-subtext">CRAFTING DIGITAL ARTIFACTS THAT DEFINE MODERN OCEANOGRAPHY AND PUSH THE BOUNDARIES OF DATA PERCEPTION.</p>
+          <button
+            type="button"
+            className="bounce-arrow"
+            onClick={scrollToAbout}
+            aria-label="Scroll to about section"
           >
-          StreamLit
+            ↓
           </button>
         </div>
-      </div>
+      </section>
 
-      {/* Black Section with Information Dashboards */}
-      <div className="section-dark">
-        <div className="container-7xl">
-          <h2 className="section-title animate-fade-in-up">Know Ocean More</h2>
-
-          {/* Information Dashboards */}
-          <div className="grid-1-3">
-            {/* Economic Impact Dashboard */}
-            <div className="card" style={{ animationDelay: "0.1s", animationFillMode: "forwards" }}>
-              <div className="card-body emerald">
-                <div className="center">
-                  <div className="icon-circle">
-                    <span className="text-white text-3xl font-bold">$</span>
-                  </div>
-                  <h3 className="card-title">Economic Impact</h3>
-                  <p className="card-text">
-                    Oceans support global trade, fisheries, and tourism, provide food and energy, sustain livelihoods for billions, and contribute over <span className="font-bold text-emerald-400">$400 billion annually</span>, while enabling transportation, recreation, and economic development worldwide.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Climate Change Dashboard */}
-            <div className="card" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
-              <div className="card-body red">
-                <div className="center">
-                  <div className="icon-circle">
-                    <span className="text-white text-3xl font-bold">🌡️</span>
-                  </div>
-                  <h3 className="card-title">Climate Impact</h3>
-                  <p className="card-text">
-                    Climate change melts Greenland <span className="font-bold text-red-400">270B tons/year</span>, Antarctica <span className="font-bold text-red-400">150B tons/year</span>, raising sea levels 3.7 mm/year. Warmer oceans fuel 25% more Category 4–5 storms, while 50% of coral reefs are lost and ocean acidity increased 30%.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Biodiversity Dashboard */}
-            <div className="card" style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}>
-              <div className="card-body indigo">
-                <div className="center">
-                  <div className="icon-circle">
-                    <span className="text-white text-3xl font-bold">🐋</span>
-                  </div>
-                  <h3 className="card-title">Biodiversity</h3>
-                  <p className="card-text">
-                    The ocean hosts incredible biodiversity: over <span className="font-bold text-indigo-400">230,000 known species</span>, from tiny plankton to giant whales. Coral reefs support 25% of marine species, while deep seas hide mysterious creatures. Oceans cover 70% of Earth.
-                  </p>
-                </div>
-              </div>
-            </div>
+      {/* Featured Asymmetric Section - Dark */}
+      <section id="about" className="featured-section">
+        <div className="featured-grid">
+          <div className="featured-left">
+            <div className="cyan-square-offset"></div>
+            <img src={pic3} alt="Featured" className="grayscale-img" />
           </div>
-
-          {/* About FloatChat Section */}
-          <div className="about" id="about">
-            <h2 className="about-title animate-fade-in-up">About FloatChat</h2>
-            <div className="about-row">
-              {/* Text Content */}
-              <div className="about-text">
-                <p className="animate-fade-in-up" style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}>
-                  FloatChat is an AI-powered conversational interface designed to make ARGO oceanographic data accessible and easy to explore. Oceans generate vast amounts of data through profiling floats, BGC sensors, and other in-situ measurements, but analyzing this data often requires advanced technical skills. FloatChat bridges this gap, allowing users to interact with ocean data using natural language.
-                </p>
-                <p className="animate-fade-in-up" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
-                  At its core, FloatChat combines Artificial Intelligence (AI) with Retrieval-Augmented Generation (RAG) techniques. Users ask questions in plain language—like viewing salinity profiles or comparing ocean parameters—and the system translates these queries into structured database searches, retrieving precise and meaningful results.
-                </p>
-                <p className="animate-fade-in-up" style={{ animationDelay: "1.1s", animationFillMode: "forwards" }}>
-                  With an intuitive chat interface and interactive dashboards, FloatChat empowers researchers, educators, and enthusiasts to visualize float trajectories, depth-time profiles, and comparisons, turning complex ocean datasets into actionable insights.
-                </p>
-              </div>
-
-              {/* Architecture Diagram */}
-              <div className="arch animate-fade-in-up" style={{ animationDelay: "3s", animationFillMode: "forwards" }}>
-                <div className="arch-card">
-                  <div className="arch-head">
-                    <h3>System Architecture</h3>
-                    <p>Data Flow & AI Processing</p>
-                  </div>
-
-                  {/* Architecture Flow */}
-                  <div className="flow">
-                    {/* Data Ingestion Layer */}
-                    <div className="step">
-                      <div className="badge">
-                        <div className="title">Raw Data</div>
-                        <div className="desc">ARGO NetCDF Files</div>
-                      </div>
-                      <div className="arrow">↓</div>
-                    </div>
-
-                    {/* Preprocessing Layer */}
-                    <div className="step">
-                      <div className="badge purple">
-                        <div className="title">Preprocessing</div>
-                        <div className="desc">Data Cleaning & Processing</div>
-                      </div>
-                      <div className="arrow">↓</div>
-                    </div>
-
-                    {/* Database Layer */}
-                    <div className="step">
-                      <div className="badge yellow">
-                        <div className="title">Database Layer</div>
-                        <div className="desc">PostgreSQL + VectorDB</div>
-                      </div>
-                      <div className="arrow">↓</div>
-                    </div>
-
-                    {/* AI Processing Layer */}
-                    <div className="step">
-                      <div className="badge pink">
-                        <div className="title">AI Processing</div>
-                        <div className="desc">LLM + RAG System</div>
-                      </div>
-                      <div className="arrow">↓</div>
-                    </div>
-
-                    {/* Output Layer */}
-                    <div className="step">
-                      <div className="badge green">
-                        <div className="title">User Output</div>
-                        <div className="desc">Natural Language Responses</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Our Aim Section */}
-          <div className="aim" id="aim">
-            {/* Our Aim Text */}
-            <div className="wrap">
-              <h2 className="title animate-fade-in-up">Our Aim</h2>
-              <p className="text animate-fade-in-up" style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}>
-                FloatChat was built with the belief that the oceans hold the stories of our planet, waiting to be discovered. This project strives to unlock these hidden depths, making ocean data come alive.
-              </p>
-              <p className="text animate-fade-in-up" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
-                The aim is to empower everyone—researchers, students, and enthusiasts—to explore, understand, and protect the vast, mysterious world beneath the waves.
-              </p>
-              <div className="text-center">
-                <span className="signature animate-fade-in-up" style={{ animationDelay: "1.1s", animationFillMode: "forwards" }}>~ FloatChat Developer</span>
-              </div>
-            </div>
-
-            {/* Ocean Images */}
-            <div className="team-grid animate-fade-in-up" style={{ animationDelay: "1.4s", animationFillMode: "forwards" }}>
-              {/* Ocean Life Image */}
-              <div className="team-card">
-                <div className="card-shell">
-                  <div className="square">
-                    <img src={pic1} alt="Ocean Biodiversity" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Arctic Climate Image */}
-              <div className="team-card">
-                <div className="card-shell">
-                  <div className="square">
-                    <img src={pic2} alt="Climate Research" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Ocean Exploration Image */}
-              <div className="team-card">
-                <div className="card-shell">
-                  <div className="square">
-                    <img src={pic3} alt="Ocean Exploration" />
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="featured-right">
+            <span className="sage-label">CORE TECHNOLOGY</span>
+            <h2 className="featured-heading">REDEFINING THE DATA CANVAS</h2>
+            <p className="featured-text">
+              We built an immersive AI architecture that behaves like a living museum of the ocean.
+              By merging natural language processing with brutalist data visualization, we created an interface that exists between marine science and functional art.
+            </p>
+            <button className="link-btn" onClick={() => navigate('/chat')}>ENTER CHAT SYSTEM <span>→</span></button>
           </div>
         </div>
-      </div>
-    </>
+      </section>
+
+      {/* Capabilities Section - Light */}
+      <section id="capabilities" className="capabilities-section">
+        <div className="cap-grid">
+          <div className="cap-list">
+            <span className="cap-label">CAPABILITIES</span>
+            <ul>
+              <li><span></span> Retrieval Augmented Gen</li>
+              <li><span></span> Vector Embeddings</li>
+              <li><span></span> Dynamic Graphing</li>
+              <li><span></span> Deep Ocean DB</li>
+            </ul>
+          </div>
+          <div className="cap-statement">
+            Transforming raw <span className="italic-accent">NetCDF</span> data into
+            actionable <span className="italic-accent">insights</span> through conversational AI.
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="massive-footer">
+        <h1 className="footer-heading">DIVE DEEPER</h1>
+        <a href="#" className="footer-email" onClick={(e) => { e.preventDefault(); navigate('/chat') }}>LAUNCH FLOATCHAT</a>
+
+        <div className="footer-bottom">
+          <span>© 2026 FLOATCHAT</span>
+          <div className="footer-links">
+            <a href="#">TWITTER</a>
+            <a href="#">GITHUB</a>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 };
 

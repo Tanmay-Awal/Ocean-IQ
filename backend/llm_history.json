@@ -1,0 +1,52 @@
+[
+    {
+        "timestamp": "2026-05-23T13:17:06.152372",
+        "query": "Hi what can you help me with ?",
+        "response": "I found data for multiple regions: Southern Indian Ocean, Central Arabian Sea. Please ask about a specific one, or ask for temperature/salinity comparisons!"
+    },
+    {
+        "timestamp": "2026-05-23T13:17:32.995578",
+        "query": "Okay tell me something about central arabian sea ?",
+        "response": "I found data for multiple regions: Central Arabian Sea, Northern Arabian Sea. Please ask about a specific one, or ask for temperature/salinity comparisons!"
+    },
+    {
+        "timestamp": "2026-05-23T13:17:51.408334",
+        "query": "Tell me salinity ?",
+        "response": "Salinity analysis shows values ranging from 33.6 to 35.8 PSU with an average of 34.8 PSU."
+    },
+    {
+        "timestamp": "2026-05-23T13:18:08.520753",
+        "query": "this was about arabian sea ??",
+        "response": "Salinity analysis shows values ranging from 34.3 to 36.4 PSU with an average of 35.1 PSU."
+    },
+    {
+        "timestamp": "2026-05-23T13:18:41.023138",
+        "query": "Ok thanks",
+        "response": "Salinity analysis shows values ranging from 33.6 to 35.8 PSU with an average of 34.8 PSU."
+    },
+    {
+        "timestamp": "2026-05-23T13:26:56.936887",
+        "query": "Hi what all can you tell me ?",
+        "response": "I am here to help you with oceanographic data, ARGO floats, temperature, and salinity analysis. If this is fully out of context, I cannot assist with that!"
+    },
+    {
+        "timestamp": "2026-05-23T13:27:15.852058",
+        "query": "Oh ok for which regions you can tell ?",
+        "response": "I found data for multiple regions: Southern Indian Ocean, Central Arabian Sea. Please ask about a specific one, or ask for temperature/salinity comparisons!"
+    },
+    {
+        "timestamp": "2026-05-23T13:27:56.037852",
+        "query": "Temperature ?",
+        "response": "Temperature analysis shows a range from 2.4\u00b0C to 30.9\u00b0C with an average of 12.0\u00b0C across the region."
+    },
+    {
+        "timestamp": "2026-05-23T13:28:02.215556",
+        "query": "THanks",
+        "response": "I am here to help you with oceanographic data, ARGO floats, temperature, and salinity analysis. If this is fully out of context, I cannot assist with that!"
+    },
+    {
+        "timestamp": "2026-05-23T13:36:28.270888",
+        "query": "Hi ",
+        "response": "I am here to help you with oceanographic data, ARGO floats, temperature, and salinity analysis. If this is fully out of context, I cannot assist with that!"
+    }
+]
