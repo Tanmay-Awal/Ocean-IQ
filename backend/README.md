@@ -1,6 +1,6 @@
-# 🐍 FloatChat: Flask + PostgreSQL + AI Oceanography Backend
+# 🐍 OceanIQ: Flask + PostgreSQL + AI Oceanography Backend
 
-This is the backend server for **FloatChat**, built in **Python** using the **Flask** microframework. It acts as the orchestration layer between the React frontend, a **Neon Serverless PostgreSQL** database, a **Chroma Vector Database** for metadata semantic lookup, and advanced AI services (**Google Gemini API** & **Ollama**).
+This is the backend server for **OceanIQ**, built in **Python** using the **Flask** microframework. It acts as the orchestration layer between the React frontend, a **Neon Serverless PostgreSQL** database, a **Chroma Vector Database** for metadata semantic lookup, and advanced AI services (**Google Gemini API** & **Ollama**).
 
 ---
 

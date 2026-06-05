@@ -27,7 +27,7 @@ const UserProfileHeader = () => {
     <div className="brutalist-wrapper">
       {/* Navigation */}
       <nav className="fixed-nav">
-        <div className="nav-logo">FLOATCHAT</div>
+        <div className="nav-logo">OCEANIQ</div>
         <div className="nav-links">
           <a href="#capabilities">CAPABILITIES</a>
           <a href="#about">ABOUT</a>
@@ -95,10 +95,10 @@ const UserProfileHeader = () => {
       {/* Footer */}
       <footer className="massive-footer">
         <h1 className="footer-heading">DIVE DEEPER</h1>
-        <a href="#" className="footer-email" onClick={(e) => { e.preventDefault(); navigate('/chat') }}>LAUNCH FLOATCHAT</a>
+        <a href="#" className="footer-email" onClick={(e) => { e.preventDefault(); navigate('/chat') }}>LAUNCH OCEANIQ</a>
 
         <div className="footer-bottom">
-          <span>© 2026 FLOATCHAT</span>
+          <span>© 2026 OCEANIQ</span>
           <div className="footer-links">
             <a href="#">TWITTER</a>
             <a href="#">GITHUB</a>

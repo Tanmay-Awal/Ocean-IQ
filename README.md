@@ -1,8 +1,8 @@
-# 🌊 FloatChat: Your Simple AI Guide to Ocean Data
+# 🌊 OceanIQ: Your Simple AI Guide to Ocean Data
 
-Welcome to **FloatChat**, a personal project designed to make complex ocean data easy to explore for everyone! 
+Welcome to **OceanIQ**, a personal project designed to make complex ocean data easy to explore for everyone! 
 
-Oceans are monitored by hundreds of floating scientific devices (called **ARGO floats**) that drift in the water, measuring things like temperature, saltiness (salinity), water pressure, and oxygen levels. While scientists use complex databases to read this data, **FloatChat** lets anyone explore this information by simply chatting with an friendly AI ocean expert named **Aqua**.
+Oceans are monitored by hundreds of floating scientific devices (called **ARGO floats**) that drift in the water, measuring things like temperature, saltiness (salinity), water pressure, and oxygen levels. While scientists use complex databases to read this data, **OceanIQ** lets anyone explore this information by simply chatting with an friendly AI ocean expert named **Aqua**.
 
 If you want to know about ocean trends, see water maps, or generate custom charts, you can just ask in plain English!
 
@@ -31,7 +31,7 @@ graph TD
 
 ---
 
-## 🌟 What Can You Do With FloatChat?
+## 🌟 What Can You Do With OceanIQ?
 
 1. **Chat with an AI Oceanographer**: Ask standard questions about oceans (e.g., *"How many floats are active?"* or *"What is the temperature of the water?"*) and get clean, conversational answers.
 2. **AI "Deep Thinking" Mode**: Switch on the **Thinking Mode** to let the AI do rigorous scientific reasoning, looking over years of history and thousands of database readings to give you a deep analysis.
@@ -42,7 +42,7 @@ graph TD
 
 ## 🛠️ The Tech Behind the Project
 
-Even though it's simple to use, FloatChat is powered by modern tools:
+Even though it's simple to use, OceanIQ is powered by modern tools:
 * **The Look & Feel (Frontend)**: Built using **React** and **Vite** with **Tailwind CSS** for a fast, responsive, and modern look.
 * **The Intelligence (Backend)**: Built using **Python** and **Flask**.
 * **The Memory & Files (Database)**: Powered by **PostgreSQL** (to store all raw float readings) and **ChromaDB** (to match geographical names to physical floats).

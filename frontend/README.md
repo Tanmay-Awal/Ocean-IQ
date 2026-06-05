@@ -1,6 +1,6 @@
-# 💻 FloatChat: React + Vite Frontend App
+# 💻 OceanIQ: React + Vite Frontend App
 
-This is the client-side SPA (Single Page Application) for **FloatChat**, built on a ultra-fast **Vite** runtime with **React (v19)**. The interface is custom styled with **Tailwind CSS (v4)**, featuring high-fidelity micro-interactions, premium CSS layouts, modern typing animations, and fully responsive dashboards.
+This is the client-side SPA (Single Page Application) for **OceanIQ**, built on a ultra-fast **Vite** runtime with **React (v19)**. The interface is custom styled with **Tailwind CSS (v4)**, featuring high-fidelity micro-interactions, premium CSS layouts, modern typing animations, and fully responsive dashboards.
 
 ---
 

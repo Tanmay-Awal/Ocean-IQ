@@ -2,7 +2,7 @@ import { useState, useContext, useEffect, useRef } from "react";
 import './Main.css';
 import { assets } from '../../../assets/assets';
 import { Context } from '../../../context/Context';
-import flowchatLogo from '../../../assets/floatchat.png';
+import oceaniqLogo from '../../../assets/oceaniq.png';
 
 function Main() {
     const { 
@@ -58,7 +58,7 @@ function Main() {
             {/* Top Navigation Pill */}
             <div className="top-nav-wrapper">
                 <div className="nav-left">
-                    <img src={flowchatLogo} alt="FlowChat" className="brand-logo" />
+                    <img src={oceaniqLogo} alt="OceanIQ" className="brand-logo" />
                 </div>
                 
                 <div className="pill-nav">
