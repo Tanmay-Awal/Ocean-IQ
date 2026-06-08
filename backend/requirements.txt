@@ -1,0 +1,14 @@
+flask
+flask-cors
+psycopg2-binary
+pandas
+numpy
+chromadb
+sentence-transformers
+google-generativeai
+groq
+duckduckgo_search
+requests
+python-dotenv
+plotly
+openpyxl

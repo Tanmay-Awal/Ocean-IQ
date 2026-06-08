@@ -1,137 +1,125 @@
-import sys
-if hasattr(sys.stdout, 'reconfigure'):
-    try:
-        sys.stdout.reconfigure(encoding='utf-8')
-    except Exception:
-        pass
-if hasattr(sys.stderr, 'reconfigure'):
-    try:
-        sys.stderr.reconfigure(encoding='utf-8')
-    except Exception:
-        pass
+"""
+OceanIQ Backend Server
+======================
+Flask REST API for OceanIQ. Integrates our services:
+1. Intelligence Engine (conversational pipeline)
+2. Geocoding and Data Services
+"""
 
-import json
-import time
+from __future__ import annotations
+
+import logging
+import os
+import pandas as pd
 from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
-import os
-from functools import wraps
-from flask import after_this_request
-import pandas as pd
-from functools import wraps
-from flask import after_this_request
 
-# Import all systems
-from argo_system import EnhancedHybridArgoSystem
-from gemini import GeminiThinkingSystem
-from graphs import ArgoGraphGenerator
+from app.config import FLASK_PORT, FLASK_DEBUG, GRAPHS_DIR
 from app.services.intelligence_engine import IntelligenceEngine
+from app.services.data_service import DataService
 
-# Initialize the Flask app
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
-CORS(app) # Enable CORS for all routes
+# Enable CORS for all origins, allowing typical React development servers
+CORS(app, resources={r"/api/*": {"origins": "*"}, r"/graphs/*": {"origins": "*"}})
 
-# Define the directory for graph images
-GRAPHS_DIR = "graphs"
+# Ensure graphs directory exists
+os.makedirs(os.path.abspath(GRAPHS_DIR), exist_ok=True)
 
-# Initialize all data systems once when the server starts
-try:
-    standard_system = EnhancedHybridArgoSystem()
-    thinking_system = GeminiThinkingSystem(standard_system)
-    graph_generator = ArgoGraphGenerator()
-    is_server_ready = True
-except Exception as e:
-    print(f"Failed to initialize one or more systems: {e}", file=sys.stderr)
-    standard_system = None
-    thinking_system = None
-    is_server_ready = False
 
-# New route to serve graph images
-# Note: The deletion logic has been completely removed from this route.
-@app.route(f'/{GRAPHS_DIR}/<path:filename>')
+@app.route("/graphs/<path:filename>")
 def serve_graph(filename):
+    """Serves generated static graphs."""
     try:
-        return send_from_directory(GRAPHS_DIR, filename)
+        return send_from_directory(os.path.abspath(GRAPHS_DIR), filename)
     except FileNotFoundError:
-        return jsonify({'error': 'Graph not found'}), 404
+        return jsonify({"error": "Graph not found"}), 404
 
-@app.route('/api/chat/stream', methods=['POST'])
-def chat_stream():
-    if not is_server_ready:
-        return jsonify({'error': 'Server initialization failed'}), 500
 
-    data = request.get_json()
-    user_query = data.get('query')
-    is_thinking_mode = data.get('isThinkingMode', False)
-    chat_memory = data.get('chatMemory', [])
+@app.route("/api/health", methods=["GET"])
+def health_check():
+    """Simple API health check."""
+    return jsonify({"status": "healthy", "service": "oceaniq-backend"})
 
-    if not user_query:
-        return jsonify({'error': 'No query provided in the request'}), 400
-
-    def generate():
-        try:
-            for chunk in IntelligenceEngine.process_query_stream(user_query, chat_memory, is_thinking_mode):
-                yield chunk
-        except Exception as e:
-            print(f"Error in stream: {e}", file=sys.stderr)
-            import json
-            yield f"event: error\ndata: {json.dumps(str(e))}\n\n"
-
-    return Response(generate(), mimetype='text/event-stream')
-
-@app.route('/api/dashboard/stats', methods=['GET'])
-def dashboard_stats():
-    try:
-        from app.services.data_service import DataService
-        metadata = DataService.get_floats_metadata()
-        
-        if not metadata:
-            return jsonify({'stats': {}, 'coverage': [], 'floats': []})
-            
-        total_floats = len(metadata)
-        total_profiles = sum(item.get("measurements_count", 0) for item in metadata)
-        
-        valid_temps = [item.get("avg_temp") for item in metadata if item.get("avg_temp") is not None]
-        avg_temp = sum(valid_temps) / len(valid_temps) if valid_temps else 15.0
-        
-        # Calculate regional coverage
-        regions = {}
-        for item in metadata:
-            r = item.get("region", "Unknown")
-            regions[r] = regions.get(r, 0) + 1
-            
-        coverage_data = [{"region": k, "coverage": v} for k, v in regions.items()]
-        
-        return jsonify({
-            'stats': {
-                'totalFloats': total_floats,
-                'cachedProfiles': total_profiles,
-                'avgTemperature': round(avg_temp, 1),
-                'dataCoverage': 100 # Default until coverage metric is defined
-            },
-            'coverage': coverage_data,
-            'floats': metadata
-        })
-    except Exception as e:
-        print(f"Error fetching dashboard stats: {e}", file=sys.stderr)
-        return jsonify({'error': str(e)}), 500
 
 @app.route("/api/floats", methods=["GET"])
 def get_floats():
     """Returns metadata for all unique floats in the system."""
     try:
-        from app.services.data_service import DataService
         metadata = DataService.get_floats_metadata()
         return jsonify({"floats": metadata})
     except Exception as e:
-        print(f"Error in /api/floats: {e}", file=sys.stderr)
+        logger.error(f"Error in /api/floats: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    """Main conversational API endpoint."""
+    try:
+        body = request.get_json() or {}
+        query = body.get("query")
+        thinking_mode = body.get("isThinkingMode", False)
+        chat_memory = body.get("chatMemory", [])
+
+        if not query:
+            return jsonify({"error": "No query provided."}), 400
+
+        # Run the query through our intelligent orchestrator pipeline
+        result = IntelligenceEngine.process_query(
+            query=query,
+            chat_history=chat_memory,
+            thinking_mode=thinking_mode
+        )
+
+        # Build response compatible with frontend
+        response_data = {
+            "message": result["message"],
+            "graph_path": result.get("graph_path"),
+            "graph_json": result.get("graph_json"),
+            "attribution": result["attribution"]
+        }
+
+        return jsonify(response_data)
+
+    except Exception as e:
+        logger.exception("Error during chat processing:")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/chat/stream", methods=["POST"])
+def chat_stream():
+    """Streaming conversational endpoint using Server-Sent Events (SSE)."""
+    try:
+        body = request.get_json() or {}
+        query = body.get("query")
+        thinking_mode = body.get("isThinkingMode", False)
+        chat_memory = body.get("chatMemory", [])
+
+        if not query:
+            return jsonify({"error": "No query provided."}), 400
+
+        # Return the event stream response
+        return Response(
+            IntelligenceEngine.process_query_stream(
+                query=query,
+                chat_history=chat_memory,
+                thinking_mode=thinking_mode
+            ),
+            mimetype="text/event-stream"
+        )
+    except Exception as e:
+        logger.exception("Error during chat streaming setup:")
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/floats/<wmo>/stats", methods=["GET"])
 def get_float_stats(wmo):
     """Computes advanced vertical profile analysis metrics for a float."""
     try:
-        from app.services.data_service import DataService
         from app.services.analysis_service import AnalysisService
         
         # Fetch total raw rows from db regardless of temperature filters
@@ -163,15 +151,14 @@ def get_float_stats(wmo):
         }
         return jsonify(stats)
     except Exception as e:
-        print(f"Error computing float stats: {e}", file=sys.stderr)
+        logger.error(f"Error computing float stats: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/dashboard/profile-curves", methods=["GET"])
 def get_profile_curves():
     """Returns dynamic averaged temperature profiles for two floats."""
     try:
-        from app.services.data_service import DataService
-        
         # Select two floats with good temperature profiles
         floats = ["1902677", "2902217"]
         
@@ -214,8 +201,9 @@ def get_profile_curves():
             "wmo2": wmo2
         })
     except Exception as e:
-        print(f"Error computing profile curves: {e}", file=sys.stderr)
+        logger.error(f"Error computing profile curves: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/suggestions", methods=["GET"])
 def get_suggestions():
@@ -230,11 +218,11 @@ def get_suggestions():
     ]
     return jsonify({"suggestions": suggestions})
 
+
 @app.route("/api/data", methods=["POST"])
 def get_data():
     """Returns filtered ARGO data as JSON for previewing."""
     try:
-        from app.services.data_service import DataService
         body = request.get_json() or {}
         wmo_ids = body.get("wmo_ids", [])
         filters = body.get("filters", {})
@@ -247,14 +235,14 @@ def get_data():
         data_res = DataService.get_detailed_data(wmo_ids, filters=filters, limit=limit)
         return jsonify(data_res)
     except Exception as e:
-        print(f"Error in /api/data: {e}", file=sys.stderr)
+        logger.error(f"Error in /api/data: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/export", methods=["POST"])
 def export_csv():
     """Exports filtered ARGO data as CSV."""
     try:
-        from app.services.data_service import DataService
         body = request.get_json() or {}
         wmo_ids = body.get("wmo_ids", [])
         filters = body.get("filters", {})
@@ -276,56 +264,10 @@ def export_csv():
             headers={"Content-disposition": "attachment; filename=argo_data_export.csv"}
         )
     except Exception as e:
-        print(f"Error exporting CSV: {e}", file=sys.stderr)
+        logger.error(f"Error exporting CSV: {e}")
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    if not is_server_ready:
-        return jsonify({'error': 'Server initialization failed'}), 500
 
-    try:
-        data = request.get_json()
-        user_query = data.get('query')
-        is_thinking_mode = data.get('isThinkingMode', False)
-        chat_memory = data.get('chatMemory', [])
-
-        if not user_query:
-            return jsonify({'error': 'No query provided in the request'}), 400
-
-        graph_keywords = ['plot', 'graph', 'chart']
-        is_graph_request = any(keyword in user_query.lower() for keyword in graph_keywords)
-        
-        if is_graph_request:
-            raw_data = standard_system.get_raw_data_for_graph(user_query)
-            
-            if raw_data is None:
-                return jsonify({'message': "I couldn't find enough data to generate a graph for that query."})
-            
-            # Ensure the graphs directory exists
-            if not os.path.exists(GRAPHS_DIR):
-                os.makedirs(GRAPHS_DIR)
-            
-            graph_path = graph_generator.generate_graph_from_data(user_query, raw_data)
-            
-            if graph_path:
-                # Return the relative URL to the graph image
-                # The file is not deleted here or in the serving route.
-                relative_graph_url = f'/{GRAPHS_DIR}/{os.path.basename(graph_path)}'
-                return jsonify({'graph_path': relative_graph_url})
-            else:
-                return jsonify({'message': "I was unable to generate a graph for that data."})
-
-        if is_thinking_mode:
-            final_answer = thinking_system.query_system_thinking_mode(user_query, chat_memory)
-        else:
-            final_answer = standard_system.query_system(user_query, chat_memory)
-
-        return jsonify({'message': final_answer})
-
-    except Exception as e:
-        print(f"An error occurred during chat processing: {e}", file=sys.stderr)
-        return jsonify({'error': str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(host='localhost', port=5000, debug=True)
+if __name__ == "__main__":
+    logger.info(f"Starting OceanIQ server on port {FLASK_PORT}...")
+    app.run(host="0.0.0.0", port=FLASK_PORT, debug=FLASK_DEBUG)

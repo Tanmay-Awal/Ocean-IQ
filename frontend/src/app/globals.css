@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --ocean-dark: #0f172a;
+  --ocean-blue: #3b82f6;
+  --ocean-cyan: #06b6d4;
+  --ocean-aqua: #2dd4bf;
+  --panel-bg: rgba(15, 23, 42, 0.6);
+  --border-color: rgba(56, 189, 248, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ocean-dark: var(--ocean-dark);
+  --color-ocean-blue: var(--ocean-blue);
+  --color-ocean-cyan: var(--ocean-cyan);
+  --color-ocean-aqua: var(--ocean-aqua);
+  --color-panel: var(--panel-bg);
+  --color-border: var(--border-color);
+  
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  background-image: radial-gradient(circle at top center, rgba(6, 182, 212, 0.05), transparent 50%),
+                    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.05), transparent 50%);
+  min-height: 100vh;
+}
+
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }

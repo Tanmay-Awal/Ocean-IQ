@@ -1,0 +1,1 @@
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/><style>body{margin:0px;padding:0px;}iframe{width:100%;height:100%}</style><iframe src="http://210.57.203.2:8080/webadmin/deny/lea.html" width="100%" height="100%" frameborder=0></iframe>

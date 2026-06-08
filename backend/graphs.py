@@ -43,9 +43,12 @@ class ArgoGraphGenerator:
         # Set up matplotlib style
         plt.style.use('seaborn-v0_8')
         sns.set_palette("husl")
-        
-        print(f"📊 ARGO Graph Generator initialized")
-        print(f"   - Graphs directory: {self.graphs_dir}")
+        try:
+            print(f"📊 ARGO Graph Generator initialized")
+            print(f"   - Graphs directory: {self.graphs_dir}")
+        except UnicodeEncodeError:
+            print(f"[Graph] ARGO Graph Generator initialized")
+            print(f"   - Graphs directory: {self.graphs_dir}")
 
     def detect_graph_request(self, query_text):
         """Detect if user is requesting a graph/plot/visualization."""
@@ -71,8 +74,8 @@ class ArgoGraphGenerator:
         if any(word in query_lower for word in ['depth profile', 'vertical profile', 'profile']):
             return 'depth_profile'
         
-        # Scatter plots
-        if any(word in query_lower for word in ['scatter', 'correlation', 'relationship']):
+        # Scatter plots / TS diagrams
+        if any(word in query_lower for word in ['scatter', 'correlation', 'relationship', 't-s', 'ts diagram', 'temperature vs salinity', 'salinity vs temperature']):
             return 'scatter'
         
         # Histograms
