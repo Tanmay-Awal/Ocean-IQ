@@ -28,9 +28,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
     Promise.all([
-      fetch('http://localhost:5000/api/floats').then(res => res.json()),
-      fetch('http://localhost:5000/api/dashboard/profile-curves').then(res => res.json())
+      fetch(`${apiUrl}/api/floats`).then(res => res.json()),
+      fetch(`${apiUrl}/api/dashboard/profile-curves`).then(res => res.json())
     ])
       .then(([floatsJson, curvesJson]) => {
         setData(floatsJson.floats || [])

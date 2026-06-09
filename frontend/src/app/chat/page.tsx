@@ -107,7 +107,8 @@ function ChatContent() {
       const abortController = new AbortController()
       abortControllerRef.current = abortController
 
-      const response = await fetch("http://localhost:5000/api/chat/stream", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+      const response = await fetch(`${apiUrl}/api/chat/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: abortController.signal,
@@ -148,7 +149,8 @@ function ChatContent() {
             if (dataLine) {
               const meta = JSON.parse(dataLine.replace('data: ', ''))
               if (meta.graph_path) {
-                graphUrl = `http://localhost:5000${meta.graph_path}`
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+                graphUrl = `${apiUrl}${meta.graph_path}`
               }
               if (meta.graph_json) {
                 graphJsonData = meta.graph_json

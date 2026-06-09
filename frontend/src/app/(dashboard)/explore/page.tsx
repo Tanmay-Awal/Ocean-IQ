@@ -43,7 +43,8 @@ export default function ExplorePage() {
   const todayDate = new Date().toISOString().split('T')[0]
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/floats")
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+    fetch(`${apiUrl}/api/floats`)
       .then(res => res.json())
       .then(data => {
         setFloats(data.floats || [])
@@ -58,10 +59,11 @@ export default function ExplorePage() {
   const handleCompare = async () => {
     if (!floatA || !floatB) return
     setIsComparing(true)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
     try {
       const [resA, resB] = await Promise.all([
-        fetch(`http://localhost:5000/api/floats/${floatA}/stats`).then(r => r.json()),
-        fetch(`http://localhost:5000/api/floats/${floatB}/stats`).then(r => r.json())
+        fetch(`${apiUrl}/api/floats/${floatA}/stats`).then(r => r.json()),
+        fetch(`${apiUrl}/api/floats/${floatB}/stats`).then(r => r.json())
       ])
       
       setStatsA(resA.error ? null : resA)
@@ -81,7 +83,8 @@ export default function ExplorePage() {
         payload.filters = { date_range: [startDate, endDate] }
       }
       
-      const response = await fetch("http://localhost:5000/api/export", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+      const response = await fetch(`${apiUrl}/api/export`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
