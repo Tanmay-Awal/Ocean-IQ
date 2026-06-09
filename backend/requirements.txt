@@ -4,7 +4,6 @@ psycopg2-binary
 pandas
 numpy
 chromadb
-sentence-transformers
 google-generativeai
 groq
 duckduckgo_search

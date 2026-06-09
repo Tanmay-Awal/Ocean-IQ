@@ -15,7 +15,7 @@ import numpy as np
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from chromadb import PersistentClient
-from sentence_transformers import SentenceTransformer
+from chromadb.utils.embedding_functions import GoogleGenerativeAiEmbeddingFunction
 import json
 import os
 import time
@@ -24,8 +24,8 @@ from app.config import (
     POSTGRES_URL,
     CHROMA_PATH,
     COLLECTION_NAME,
-    EMBED_MODEL,
     REGION_DEFINITIONS,
+    GEMINI_API_KEY,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,19 +33,19 @@ logger = logging.getLogger(__name__)
 
 class DataService:
     # Class-level caches
-    _embed_model: SentenceTransformer | None = None
     _chroma_client: PersistentClient | None = None
     _collection: Any = None
     _metadata_cache: List[Dict[str, Any]] | None = None
     _metadata_cache_time: float = 0
-    
+    _gemini_ef: GoogleGenerativeAiEmbeddingFunction | None = None
+
     @classmethod
-    def get_embed_model(cls) -> SentenceTransformer:
-        """Lazy load the sentence embedding model."""
-        if cls._embed_model is None:
-            logger.info("Loading sentence transformer model...")
-            cls._embed_model = SentenceTransformer(EMBED_MODEL)
-        return cls._embed_model
+    def get_embedding_function(cls) -> GoogleGenerativeAiEmbeddingFunction:
+        if cls._gemini_ef is None:
+            if not GEMINI_API_KEY:
+                raise ValueError("GEMINI_API_KEY environment variable is required for ChromaDB embeddings.")
+            cls._gemini_ef = GoogleGenerativeAiEmbeddingFunction(api_key=GEMINI_API_KEY, model_name="models/text-embedding-004")
+        return cls._gemini_ef
 
     @classmethod
     def get_chroma_collection(cls) -> Any:
@@ -53,11 +53,12 @@ class DataService:
         if cls._chroma_client is None:
             logger.info(f"Connecting to ChromaDB at: {CHROMA_PATH}")
             cls._chroma_client = PersistentClient(path=CHROMA_PATH)
+            ef = cls.get_embedding_function()
             try:
-                cls._collection = cls._chroma_client.get_collection(name=COLLECTION_NAME)
+                cls._collection = cls._chroma_client.get_collection(name=COLLECTION_NAME, embedding_function=ef)
             except Exception:
                 logger.info(f"Collection {COLLECTION_NAME} not found. Creating it...")
-                cls._collection = cls._chroma_client.create_collection(name=COLLECTION_NAME)
+                cls._collection = cls._chroma_client.create_collection(name=COLLECTION_NAME, embedding_function=ef)
                 cls._bootstrap_chroma_metadata()
         return cls._collection
 
