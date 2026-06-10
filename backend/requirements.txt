@@ -13,3 +13,5 @@ plotly
 openpyxl
 gunicorn
 matplotlib
+seaborn
+huggingface_hub
