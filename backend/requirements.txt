@@ -12,3 +12,4 @@ python-dotenv
 plotly
 openpyxl
 gunicorn
+matplotlib
