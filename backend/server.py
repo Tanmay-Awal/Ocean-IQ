@@ -53,12 +53,12 @@ def serve_graph(filename):
     try:
         return send_from_directory(GRAPHS_DIR, filename)
     except FileNotFoundError:
-        return jsonify({'error': 'Graph not found'}), 404
+        return jsonify({'error': 'The requested ocean profile graph could not be found.'}), 404
 
 @app.route('/api/chat/stream', methods=['POST'])
 def chat_stream():
     if not is_server_ready:
-        return jsonify({'error': 'Server initialization failed'}), 500
+        return jsonify({'error': 'The OceanIQ analytics server is still starting up. Please wait a moment and try again.'}), 500
 
     data = request.get_json()
     user_query = data.get('query')
@@ -66,7 +66,7 @@ def chat_stream():
     chat_memory = data.get('chatMemory', [])
 
     if not user_query:
-        return jsonify({'error': 'No query provided in the request'}), 400
+        return jsonify({'error': 'Please provide an oceanographic query or question to analyze.'}), 400
 
     def generate():
         try:
@@ -75,7 +75,7 @@ def chat_stream():
         except Exception as e:
             print(f"Error in stream: {e}", file=sys.stderr)
             import json
-            yield f"event: error\ndata: {json.dumps(str(e))}\n\n"
+            yield f"event: error\ndata: {json.dumps('Aqua AI encountered an issue processing this query. Please try rephrasing or retry in a moment.')}\n\n"
 
     return Response(generate(), mimetype='text/event-stream')
 
@@ -114,7 +114,7 @@ def dashboard_stats():
         })
     except Exception as e:
         print(f"Error fetching dashboard stats: {e}", file=sys.stderr)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Unable to retrieve dashboard telemetry statistics at this time. Please try again shortly.'}), 500
 
 @app.route("/api/floats", methods=["GET"])
 def get_floats():
@@ -125,7 +125,7 @@ def get_floats():
         return jsonify({"floats": metadata})
     except Exception as e:
         print(f"Error in /api/floats: {e}", file=sys.stderr)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Unable to load float array data at this time. Please try again shortly."}), 500
 
 @app.route("/api/floats/<wmo>/stats", methods=["GET"])
 def get_float_stats(wmo):
@@ -164,7 +164,7 @@ def get_float_stats(wmo):
         return jsonify(stats)
     except Exception as e:
         print(f"Error computing float stats: {e}", file=sys.stderr)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Unable to compute profile metrics for float {wmo}. Please try again shortly."}), 500
 
 @app.route("/api/dashboard/profile-curves", methods=["GET"])
 def get_profile_curves():
@@ -215,7 +215,7 @@ def get_profile_curves():
         })
     except Exception as e:
         print(f"Error computing profile curves: {e}", file=sys.stderr)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Unable to calculate vertical profile curves at this time. Please try again shortly."}), 500
 
 @app.route("/api/suggestions", methods=["GET"])
 def get_suggestions():
@@ -248,7 +248,7 @@ def get_data():
         return jsonify(data_res)
     except Exception as e:
         print(f"Error in /api/data: {e}", file=sys.stderr)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Unable to retrieve telemetry soundings preview. Please try again shortly."}), 500
 
 @app.route("/api/export", methods=["POST"])
 def export_csv():
@@ -267,7 +267,7 @@ def export_csv():
         df = pd.DataFrame(data_res.get("data", []))
         
         if df.empty:
-            return jsonify({"error": "No data found to export."}), 404
+            return jsonify({"error": "No matching ocean profile records found to export for the selected criteria."}), 404
             
         csv_data = df.to_csv(index=False)
         return Response(
@@ -277,12 +277,12 @@ def export_csv():
         )
     except Exception as e:
         print(f"Error exporting CSV: {e}", file=sys.stderr)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "An issue occurred while generating the CSV export file. Please try again."}), 500
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
     if not is_server_ready:
-        return jsonify({'error': 'Server initialization failed'}), 500
+        return jsonify({'error': 'The OceanIQ analytics server is still starting up. Please wait a moment and try again.'}), 500
 
     try:
         data = request.get_json()
@@ -291,7 +291,7 @@ def chat():
         chat_memory = data.get('chatMemory', [])
 
         if not user_query:
-            return jsonify({'error': 'No query provided in the request'}), 400
+            return jsonify({'error': 'Please provide an oceanographic query or question to analyze.'}), 400
 
         graph_keywords = ['plot', 'graph', 'chart']
         is_graph_request = any(keyword in user_query.lower() for keyword in graph_keywords)
@@ -300,7 +300,7 @@ def chat():
             raw_data = standard_system.get_raw_data_for_graph(user_query)
             
             if raw_data is None:
-                return jsonify({'message': "I couldn't find enough data to generate a graph for that query."})
+                return jsonify({'message': "Insufficient profile soundings found to plot a depth profile for that query. Try specifying an active WMO ID (e.g. 2902217)."})
             
             # Ensure the graphs directory exists
             if not os.path.exists(GRAPHS_DIR):
@@ -314,7 +314,7 @@ def chat():
                 relative_graph_url = f'/{GRAPHS_DIR}/{os.path.basename(graph_path)}'
                 return jsonify({'graph_path': relative_graph_url})
             else:
-                return jsonify({'message': "I was unable to generate a graph for that data."})
+                return jsonify({'message': "Unable to generate the requested physical profile graph. Please refine your query parameters."})
 
         if is_thinking_mode:
             final_answer = thinking_system.query_system_thinking_mode(user_query, chat_memory)
@@ -325,7 +325,7 @@ def chat():
 
     except Exception as e:
         print(f"An error occurred during chat processing: {e}", file=sys.stderr)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Aqua AI was unable to complete the analysis. Please try rephrasing your research query.'}), 500
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
