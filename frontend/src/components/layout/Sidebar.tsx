@@ -249,7 +249,7 @@ export function Sidebar() {
                 <Radio className={cn("w-3 h-3", fleetStats.activeFloats !== null ? "text-emerald-500" : "text-slate-400")} /> ARGO Uplink
               </span>
               <Badge 
-                variant={fleetStats.activeFloats !== null ? "active" : "secondary"} 
+                variant={fleetStats.activeFloats !== null ? "active" : "standby"} 
                 dot 
                 className="text-[9px] px-1.5 py-0"
               >

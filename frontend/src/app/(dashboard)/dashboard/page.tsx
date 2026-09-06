@@ -581,7 +581,7 @@ export default function DashboardPage() {
                     tickLine={false} 
                   />
                   <Tooltip 
-                    cursor={{ fill: isDark ? 'rgba(56, 189, 248, 0.08)' : 'rgba(2, 132, 199, 0.06)', radius: [8, 8, 0, 0] }}
+                    cursor={{ fill: isDark ? 'rgba(56, 189, 248, 0.08)' : 'rgba(2, 132, 199, 0.06)', radius: 8 }}
                     content={<BarCustomTooltip />}
                   />
                   <Bar 
