@@ -29,11 +29,11 @@ class IntentService:
         user_prompt = INTENT_CLASSIFICATION_PROMPT.replace("{query}", query)
         
         try:
-            # Call primary LLM (Gemini) to get structured classification
+            # Call primary LLM to get structured classification
             raw_response = LLMService.generate_content(
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
-                provider="gemini",  # Explicitly use gemini for classification
+                provider=None,
                 stream=False
             )
             

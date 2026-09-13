@@ -413,7 +413,7 @@ function ChatContent() {
         
         {messages.length === 0 ? (
           /* Empty State: Research Prompt Matrix with Responsive Safe Layout */
-          <div className="w-full max-w-3xl mx-auto flex flex-col items-center my-auto pt-3 pb-6 sm:py-6 md:py-8 animate-fade-in-up">
+          <div className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto flex flex-col items-center my-auto pt-3 pb-6 sm:py-6 md:py-8 animate-fade-in-up">
             
             {/* Header Block with Responsive Proportions */}
             <div className="text-center space-y-2 sm:space-y-3 max-w-xl mx-auto mb-4 sm:mb-6">
@@ -488,7 +488,7 @@ function ChatContent() {
           </div>
         ) : (
           /* Active Chat Stream */
-          <div className="max-w-3xl mx-auto space-y-6 pb-12 w-full">
+          <div className="max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-6 pb-12 w-full">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -659,7 +659,7 @@ function ChatContent() {
 
       {/* Persistent Research Input Bar */}
       <div className="shrink-0 border-t border-border/50 bg-surface-base/95 backdrop-blur-xl px-4 py-2.5 sm:py-3 md:px-6 md:py-3.5 z-20 transition-colors duration-300">
-        <div className="max-w-3xl mx-auto space-y-1.5 sm:space-y-2">
+        <div className="max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-1.5 sm:space-y-2">
           
           <form
             onSubmit={(e) => {

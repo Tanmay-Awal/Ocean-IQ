@@ -54,36 +54,49 @@ export function GlobeMap({ floats }: { floats: any[] }) {
 
     const lat = validFloats.map(f => f.avg_latitude)
     const lon = validFloats.map(f => f.avg_longitude)
-    const text = validFloats.map(f => 
-      `<b>WMO ${f.wmo}</b><br>` +
-      `<span style="color:${isDark ? '#94a3b8' : '#475569'}">${f.region || 'Indian Ocean'}</span><br>` +
-      `Profiles: <b>${f.measurements_count || 0}</b> | Temp: <b>${f.avg_temp ? f.avg_temp.toFixed(1) + '°C' : 'N/A'}</b>`
+
+    const isTarget = (wmo: string) => wmo === (selectedFloat || activeFloatObj?.wmo)
+
+    // Only display a clean, concise single-line callout for the currently active/selected float
+    const textLabels = validFloats.map(f => isTarget(f.wmo) ? `  WMO ${f.wmo}` : '')
+
+    // Rich scientific telemetry tooltip displayed on hover
+    const hoverTexts = validFloats.map(f => 
+      `<b>WMO ${f.wmo}</b> &bull; <span style="color:${getFloatColor(f.wmo)}">${f.region || 'Indian Ocean'}</span><br>` +
+      `Soundings: <b>${(f.measurements_count || 0).toLocaleString()}</b><br>` +
+      `Mean Temp: <b>${f.avg_temp ? f.avg_temp.toFixed(1) + '°C' : 'N/A'}</b><br>` +
+      `Salinity: <b>${f.avg_sal ? f.avg_sal.toFixed(1) + ' PSU' : 'N/A'}</b><br>` +
+      `Position: <b>${f.avg_latitude?.toFixed(2)}°N, ${f.avg_longitude?.toFixed(2)}°E</b>`
     )
+
     const colors = validFloats.map(f => getFloatColor(f.wmo))
-    const sizes = validFloats.map(f => f.wmo === selectedFloat ? 22 : 11)
+    const sizes = validFloats.map(f => isTarget(f.wmo) ? 16 : 10)
+    const borderWidths = validFloats.map(f => isTarget(f.wmo) ? 3 : 1.5)
+    const borderColors = validFloats.map(f => isTarget(f.wmo) ? '#ffffff' : (isDark ? '#040914' : '#ffffff'))
 
     const data: any[] = [
       {
         type: 'scattergeo',
         lat: lat,
         lon: lon,
-        text: text,
+        text: textLabels,
+        hovertext: hoverTexts,
         mode: 'markers+text',
-        textposition: 'top center',
+        textposition: 'top right',
         hoverinfo: 'text',
         marker: {
           size: sizes,
           color: colors,
           line: {
-            color: isDark ? '#030712' : '#ffffff',
-            width: 2.5
+            color: borderColors,
+            width: borderWidths
           },
           opacity: 0.95
         },
         textfont: {
-          family: 'var(--font-geist-mono), monospace',
+          family: 'monospace',
           size: 11,
-          color: isDark ? '#f8fafc' : '#0f172a'
+          color: isDark ? '#38bdf8' : '#0284c7'
         }
       }
     ]
@@ -120,6 +133,16 @@ export function GlobeMap({ floats }: { floats: any[] }) {
           gridcolor: isDark ? 'rgba(56, 189, 248, 0.08)' : 'rgba(2, 132, 199, 0.10)',
           gridwidth: 0.5
         },
+      },
+      hoverlabel: {
+        bgcolor: isDark ? '#0b1626' : '#ffffff',
+        bordercolor: isDark ? '#06b6d4' : '#0284c7',
+        font: {
+          family: 'monospace',
+          size: 11,
+          color: isDark ? '#f8fafc' : '#0f172a'
+        },
+        align: 'left'
       },
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
@@ -371,7 +394,7 @@ export function GlobeMap({ floats }: { floats: any[] }) {
       <div>
         <div className="flex items-center justify-between mb-2 px-1">
           <span className="text-xs font-mono text-slate-800 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-bold">
-            <Radio className="w-3.5 h-3.5 text-ocean-cyan animate-pulse" /> Autonomous ARGO Array Array Trackers
+            <Radio className="w-3.5 h-3.5 text-ocean-cyan animate-pulse" /> Autonomous ARGO Array Trackers
           </span>
           {selectedFloat && (
             <button

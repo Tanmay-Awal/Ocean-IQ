@@ -8,6 +8,8 @@ import {
   Database, 
   Calendar, 
   ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
   Check, 
   Activity, 
   Droplets, 
@@ -57,7 +59,9 @@ export default function ExplorePage() {
   // Data Preview State
   const [previewData, setPreviewData] = useState<any[]>([])
   const [loadingPreview, setLoadingPreview] = useState(false)
-  const [previewLimit, setPreviewLimit] = useState(25)
+  const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedPreviewFloat, setSelectedPreviewFloat] = useState<string>("all")
 
   // Export State
   const [exportSelection, setExportSelection] = useState<string[]>([])
@@ -96,18 +100,38 @@ export default function ExplorePage() {
       })
   }, [])
 
-  // Auto load preview data
+  // Auto load preview data on mount or when selected float changes
   useEffect(() => {
+    setCurrentPage(1)
     fetchPreviewData()
-  }, [previewLimit])
+  }, [selectedPreviewFloat])
+
+  const totalPages = Math.max(1, Math.ceil(previewData.length / pageSize))
+  const displayedRows = previewData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const startIndex = previewData.length ? (currentPage - 1) * pageSize + 1 : 0
+  const endIndex = Math.min(currentPage * pageSize, previewData.length)
+
+  const getPageNumbers = () => {
+    const pages: number[] = []
+    const maxVisible = 5
+    let start = Math.max(1, currentPage - 2)
+    let end = Math.min(totalPages, start + maxVisible - 1)
+    if (end - start < maxVisible - 1) {
+      start = Math.max(1, end - maxVisible + 1)
+    }
+    for (let i = start; i <= end; i++) {
+      pages.push(i)
+    }
+    return pages
+  }
 
   const fetchPreviewData = async () => {
     setLoadingPreview(true)
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
     try {
-      const payload: any = { limit: previewLimit }
-      if (exportSelection.length > 0) {
-        payload.wmo_ids = exportSelection
+      const payload: any = { limit: 120 }
+      if (selectedPreviewFloat && selectedPreviewFloat !== "all") {
+        payload.wmo_ids = [selectedPreviewFloat]
       }
       const res = await fetch(`${apiUrl}/api/data`, {
         method: "POST",
@@ -116,6 +140,7 @@ export default function ExplorePage() {
       })
       const json = await res.json()
       setPreviewData(json.data || [])
+      setCurrentPage(1)
     } catch (e) {
       console.error("Failed to fetch data preview", e)
     } finally {
@@ -476,16 +501,38 @@ export default function ExplorePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <select
-                value={previewLimit}
-                onChange={(e) => setPreviewLimit(Number(e.target.value))}
-                className="h-8 px-2.5 rounded-lg bg-surface-card border border-border text-xs font-mono text-foreground focus:outline-none shadow-sm"
-              >
-                <option value={10}>10 rows</option>
-                <option value={25}>25 rows</option>
-                <option value={50}>50 rows</option>
-              </select>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+                <span className="hidden sm:inline">Float:</span>
+                <select
+                  value={selectedPreviewFloat}
+                  onChange={(e) => setSelectedPreviewFloat(e.target.value)}
+                  className="h-8 px-2.5 rounded-lg bg-surface-card border border-border text-xs font-mono text-foreground focus:outline-none shadow-sm cursor-pointer max-w-[200px]"
+                >
+                  <option value="all">All Floats (Balanced)</option>
+                  {floats.map((f) => (
+                    <option key={`preview-float-${f.wmo}`} value={f.wmo}>
+                      WMO {f.wmo} ({f.region})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+                <span className="hidden sm:inline">Rows:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value))
+                    setCurrentPage(1)
+                  }}
+                  className="h-8 px-2.5 rounded-lg bg-surface-card border border-border text-xs font-mono text-foreground focus:outline-none shadow-sm cursor-pointer"
+                >
+                  <option value={10}>10 rows</option>
+                  <option value={25}>25 rows</option>
+                  <option value={50}>50 rows</option>
+                </select>
+              </div>
               <Button
                 variant="secondary"
                 size="sm"
@@ -500,7 +547,7 @@ export default function ExplorePage() {
           </div>
         </CardHeader>
 
-        <CardContent className="p-0 overflow-x-auto">
+        <CardContent className="p-0">
           {loadingPreview ? (
             <div className="p-12 text-center text-slate-500 font-mono text-xs">
               <div className="w-5 h-5 border-2 border-ocean-cyan border-t-transparent rounded-full animate-spin mx-auto mb-2" />
@@ -511,36 +558,117 @@ export default function ExplorePage() {
               No preview data found.
             </div>
           ) : (
-            <table className="w-full text-xs text-left font-mono">
-              <thead className="uppercase bg-surface-elevated/80 border-b border-border text-slate-900 dark:text-slate-300 font-sans font-bold">
-                <tr>
-                  <th className="px-5 py-3 font-bold">WMO ID</th>
-                  <th className="px-5 py-3 font-bold">Date / Timestamp</th>
-                  <th className="px-5 py-3 font-bold">Cycle</th>
-                  <th className="px-5 py-3 font-bold">Latitude</th>
-                  <th className="px-5 py-3 font-bold">Longitude</th>
-                  <th className="px-5 py-3 text-ocean-cyan font-bold">Pressure (dbar)</th>
-                  <th className="px-5 py-3 text-rose-600 dark:text-rose-500 font-bold">Temp (°C)</th>
-                  <th className="px-5 py-3 text-sky-600 dark:text-sky-500 font-bold">Salinity (PSU)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/30 text-slate-900 dark:text-slate-300 font-medium">
-                {previewData.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-surface-hover/50 transition-colors">
-                    <td className="px-5 py-2.5 font-bold text-foreground">{row.wmo}</td>
-                    <td className="px-5 py-2.5 text-slate-700 dark:text-slate-400 font-medium">
-                      {row.profile_date ? row.profile_date.replace('T', ' ').slice(0, 19) : '—'}
-                    </td>
-                    <td className="px-5 py-2.5 text-foreground font-semibold">{row.cycle_number ?? '—'}</td>
-                    <td className="px-5 py-2.5 text-slate-700 dark:text-slate-400 font-medium">{row.latitude ? row.latitude.toFixed(3) : '—'}</td>
-                    <td className="px-5 py-2.5 text-slate-700 dark:text-slate-400 font-medium">{row.longitude ? row.longitude.toFixed(3) : '—'}</td>
-                    <td className="px-5 py-2.5 text-ocean-cyan font-bold">{row.pressure ?? '—'}</td>
-                    <td className="px-5 py-2.5 text-rose-600 dark:text-rose-300 font-bold">{row.temperature != null ? row.temperature.toFixed(2) : '—'}</td>
-                    <td className="px-5 py-2.5 text-sky-600 dark:text-sky-300 font-bold">{row.salinity != null ? row.salinity.toFixed(2) : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <>
+              {/* Scrollable Soundings Viewport with Sticky Header */}
+              <div className="max-h-[440px] overflow-y-auto overflow-x-auto scrollbar-thin">
+                <table className="w-full text-xs text-left font-mono">
+                  <thead className="sticky top-0 z-10 uppercase bg-surface-elevated/95 backdrop-blur-md border-b border-border text-slate-900 dark:text-slate-300 font-sans font-bold shadow-xs">
+                    <tr>
+                      <th className="px-5 py-3 font-bold">WMO ID</th>
+                      <th className="px-5 py-3 font-bold">Date / Timestamp</th>
+                      <th className="px-5 py-3 font-bold">Cycle</th>
+                      <th className="px-5 py-3 font-bold">Latitude</th>
+                      <th className="px-5 py-3 font-bold">Longitude</th>
+                      <th className="px-5 py-3 text-ocean-cyan font-bold">Pressure (dbar)</th>
+                      <th className="px-5 py-3 text-rose-600 dark:text-rose-500 font-bold">Temp (°C)</th>
+                      <th className="px-5 py-3 text-sky-600 dark:text-sky-500 font-bold">Salinity (PSU)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/30 text-slate-900 dark:text-slate-300 font-medium">
+                    {displayedRows.map((row, idx) => (
+                      <tr key={idx} className="hover:bg-surface-hover/50 transition-colors">
+                        <td className="px-5 py-2.5 font-bold text-foreground">{row.wmo}</td>
+                        <td className="px-5 py-2.5 text-slate-700 dark:text-slate-400 font-medium">
+                          {row.profile_date ? row.profile_date.replace('T', ' ').slice(0, 19) : '—'}
+                        </td>
+                        <td className="px-5 py-2.5 text-foreground font-semibold">
+                          {row.cycle_number != null ? `#${row.cycle_number}` : '—'}
+                        </td>
+                        <td className="px-5 py-2.5 text-slate-700 dark:text-slate-400 font-medium">
+                          {row.latitude != null ? `${Number(row.latitude).toFixed(3)}°` : '—'}
+                        </td>
+                        <td className="px-5 py-2.5 text-slate-700 dark:text-slate-400 font-medium">
+                          {row.longitude != null ? `${Number(row.longitude).toFixed(3)}°` : '—'}
+                        </td>
+                        <td className="px-5 py-2.5 text-ocean-cyan font-bold">
+                          {row.pressure != null ? (typeof row.pressure === 'number' ? row.pressure.toFixed(2) : Number(row.pressure).toFixed(2)) : '—'}
+                        </td>
+                        <td className="px-5 py-2.5 text-rose-600 dark:text-rose-300 font-bold">{row.temperature != null ? row.temperature.toFixed(2) : '—'}</td>
+                        <td className="px-5 py-2.5 text-sky-600 dark:text-sky-300 font-bold">{row.salinity != null ? row.salinity.toFixed(2) : '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination & Sounding Counter Navigation Footer */}
+              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-t border-border/50 bg-surface-card/70 text-xs font-mono">
+                <div className="text-slate-500 font-medium">
+                  Showing <span className="text-foreground font-bold">{startIndex}</span> &ndash;{" "}
+                  <span className="text-foreground font-bold">{endIndex}</span> of{" "}
+                  <span className="text-ocean-cyan font-bold">{previewData.length}</span> soundings
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className="h-7 px-2 text-xs font-semibold"
+                    title="First Page"
+                  >
+                    &laquo;
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="h-7 px-2.5 text-xs font-semibold"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5 mr-1" />
+                    Prev
+                  </Button>
+
+                  <div className="flex items-center gap-1">
+                    {getPageNumbers().map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`h-7 min-w-[28px] px-2 rounded-md font-bold text-xs transition-all ${
+                          currentPage === page
+                            ? "bg-ocean-cyan text-slate-950 shadow-sm"
+                            : "bg-surface-elevated text-foreground hover:bg-surface-hover border border-border/60"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="h-7 px-2.5 text-xs font-semibold"
+                  >
+                    Next
+                    <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="h-7 px-2 text-xs font-semibold"
+                    title="Last Page"
+                  >
+                    &raquo;
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

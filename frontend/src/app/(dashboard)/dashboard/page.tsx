@@ -176,28 +176,40 @@ export default function DashboardPage() {
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
     setLoading(true)
-    Promise.all([
-      fetch(`${apiUrl}/api/floats`).then(res => res.json()).catch(() => null),
-      fetch(`${apiUrl}/api/dashboard/profile-curves`).then(res => res.json()).catch(() => null),
-      fetch(`${apiUrl}/api/dashboard/stats`).then(res => res.json()).catch(() => null)
-    ])
-      .then(([floatsJson, curvesJson, statsJson]) => {
-        if (floatsJson && floatsJson.floats && floatsJson.floats.length > 0) {
-          setData(floatsJson.floats)
-        }
-        if (curvesJson && curvesJson.curves && curvesJson.curves.length > 0) {
-          setProfileCurves(curvesJson)
-        }
-        if (statsJson) {
-          setDashboardStats(statsJson)
+
+    // 1. Fetch float metadata immediately (populates HUD numbers & 3D Globe instantly)
+    fetch(`${apiUrl}/api/floats`)
+      .then(res => res.json())
+      .then(json => {
+        if (json?.floats?.length > 0) {
+          setData(json.floats)
         }
       })
-      .catch(err => {
-        console.error("Dashboard stats fetch caught:", err)
+      .catch(err => console.error("Floats fetch caught:", err))
+      .finally(() => setLoading(false))
+
+    // 2. Fetch aggregated stats
+    fetch(`${apiUrl}/api/dashboard/stats`)
+      .then(res => res.json())
+      .then(json => {
+        if (json) {
+          setDashboardStats(json)
+          if (json.floats?.length > 0) {
+            setData(prev => (prev.length === 0 ? json.floats : prev))
+          }
+        }
       })
-      .finally(() => {
-        setLoading(false)
+      .catch(err => console.error("Dashboard stats fetch caught:", err))
+
+    // 3. Fetch profile curves (computes vertical temperature sounding profile)
+    fetch(`${apiUrl}/api/dashboard/profile-curves`)
+      .then(res => res.json())
+      .then(json => {
+        if (json?.curves?.length > 0) {
+          setProfileCurves(json)
+        }
       })
+      .catch(err => console.error("Profile curves fetch caught:", err))
   }, [])
 
   const stats = useMemo(() => {

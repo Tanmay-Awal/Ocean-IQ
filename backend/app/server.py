@@ -56,6 +56,43 @@ def get_floats():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/dashboard/stats", methods=["GET"])
+def get_dashboard_stats():
+    """Returns aggregated high-level fleet statistics for the dashboard HUD."""
+    try:
+        metadata = DataService.get_floats_metadata()
+        if not metadata:
+            return jsonify({"stats": {}, "coverage": [], "floats": []})
+            
+        total_floats = len(metadata)
+        total_profiles = sum(item.get("measurements_count", 0) for item in metadata)
+        
+        valid_temps = [item.get("avg_temp") for item in metadata if item.get("avg_temp") is not None]
+        avg_temp = sum(valid_temps) / len(valid_temps) if valid_temps else 15.0
+        
+        # Calculate regional coverage
+        regions = {}
+        for item in metadata:
+            r = item.get("region", "Unknown")
+            regions[r] = regions.get(r, 0) + 1
+            
+        coverage_data = [{"region": k, "coverage": v} for k, v in regions.items()]
+        
+        return jsonify({
+            "stats": {
+                "totalFloats": total_floats,
+                "cachedProfiles": total_profiles,
+                "avgTemperature": round(avg_temp, 1),
+                "dataCoverage": 100
+            },
+            "coverage": coverage_data,
+            "floats": metadata
+        })
+    except Exception as e:
+        logger.error(f"Error in /api/dashboard/stats: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/chat", methods=["POST"])
 def chat():
     """Main conversational API endpoint."""
@@ -233,7 +270,8 @@ def get_data():
             wmo_ids = [f["wmo"] for f in metadata]
             
         data_res = DataService.get_detailed_data(wmo_ids, filters=filters, limit=limit)
-        return jsonify(data_res)
+        from app.utils.helpers import clean_nans
+        return jsonify(clean_nans(data_res))
     except Exception as e:
         logger.error(f"Error in /api/data: {e}")
         return jsonify({"error": str(e)}), 500

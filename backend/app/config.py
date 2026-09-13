@@ -22,14 +22,14 @@ POSTGRES_URL = os.getenv(
 # LLM Providers
 # ---------------------------------------------------------------------------
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
-# Primary LLM provider: "gemini" or "groq"
-LLM_PRIMARY = os.getenv("LLM_PRIMARY", "gemini")
-LLM_FALLBACK = os.getenv("LLM_FALLBACK", "groq")
+# Primary LLM provider: "groq" or "gemini"
+LLM_PRIMARY = os.getenv("LLM_PRIMARY", "groq")
+LLM_FALLBACK = os.getenv("LLM_FALLBACK", "gemini")
 
 # ---------------------------------------------------------------------------
 # ChromaDB / Embeddings
