@@ -39,10 +39,21 @@ def serve_graph(filename):
         return jsonify({"error": "Graph not found"}), 404
 
 
+@app.route("/", methods=["GET"])
+def index():
+    """Root endpoint for UptimeRobot / pingers / platform health checks."""
+    return jsonify({
+        "status": "healthy",
+        "service": "oceaniq-backend",
+        "message": "OceanIQ Flask Backend is operational."
+    }), 200
+
+
+@app.route("/health", methods=["GET"])
 @app.route("/api/health", methods=["GET"])
 def health_check():
-    """Simple API health check."""
-    return jsonify({"status": "healthy", "service": "oceaniq-backend"})
+    """Simple API health check for uptime monitors and load balancers."""
+    return jsonify({"status": "healthy", "service": "oceaniq-backend"}), 200
 
 
 @app.route("/api/floats", methods=["GET"])
