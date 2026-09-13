@@ -19,6 +19,7 @@ from chromadb.utils.embedding_functions import GoogleGenerativeAiEmbeddingFuncti
 import json
 import os
 import time
+import re
 
 from app.config import (
     POSTGRES_URL,
@@ -38,13 +39,50 @@ class DataService:
     _metadata_cache: List[Dict[str, Any]] | None = None
     _metadata_cache_time: float = 0
     _gemini_ef: GoogleGenerativeAiEmbeddingFunction | None = None
+    _reference_coords_cache: Dict[str, Tuple[float, float]] | None = None
 
     @classmethod
-    def get_embedding_function(cls) -> GoogleGenerativeAiEmbeddingFunction:
+    def _get_reference_coords(cls) -> Dict[str, Tuple[float, float]]:
+        if cls._reference_coords_cache is None:
+            cache: Dict[str, Tuple[float, float]] = {}
+            try:
+                with cls.get_connection() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute("""
+                            SELECT file_name, profile_id, latitude, longitude
+                            FROM argo_profiles
+                            WHERE latitude IS NOT NULL
+                        """)
+                        for fn, pid, lat, lon in cur.fetchall():
+                            try:
+                                lat_f = float(lat)
+                                lon_f = float(lon)
+                                if fn and fn not in cache:
+                                    cache[fn] = (lat_f, lon_f)
+                                if pid and pid not in cache:
+                                    cache[pid] = (lat_f, lon_f)
+                            except (TypeError, ValueError):
+                                continue
+            except Exception as e:
+                logger.warning(f"Could not load reference coords cache: {e}")
+            cls._reference_coords_cache = cache
+        return cls._reference_coords_cache
+
+    @classmethod
+    def get_embedding_function(cls) -> Any:
         if cls._gemini_ef is None:
-            if not GEMINI_API_KEY:
-                raise ValueError("GEMINI_API_KEY environment variable is required for ChromaDB embeddings.")
-            cls._gemini_ef = GoogleGenerativeAiEmbeddingFunction(api_key=GEMINI_API_KEY, model_name="models/text-embedding-004")
+            try:
+                from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
+                cls._gemini_ef = ONNXMiniLM_L6_V2()
+                return cls._gemini_ef
+            except Exception:
+                pass
+            if GEMINI_API_KEY:
+                try:
+                    cls._gemini_ef = GoogleGenerativeAiEmbeddingFunction(api_key=GEMINI_API_KEY, model_name="models/text-embedding-004")
+                    return cls._gemini_ef
+                except Exception:
+                    pass
         return cls._gemini_ef
 
     @classmethod
@@ -53,21 +91,42 @@ class DataService:
         if cls._chroma_client is None:
             logger.info(f"Connecting to ChromaDB at: {CHROMA_PATH}")
             cls._chroma_client = PersistentClient(path=CHROMA_PATH)
-            ef = cls.get_embedding_function()
             try:
-                cls._collection = cls._chroma_client.get_collection(name=COLLECTION_NAME, embedding_function=ef)
+                cls._collection = cls._chroma_client.get_collection(name=COLLECTION_NAME)
             except Exception:
-                logger.info(f"Collection {COLLECTION_NAME} not found. Creating it...")
-                cls._collection = cls._chroma_client.create_collection(name=COLLECTION_NAME, embedding_function=ef)
-                cls._bootstrap_chroma_metadata()
+                try:
+                    ef = cls.get_embedding_function()
+                    cls._collection = cls._chroma_client.get_collection(name=COLLECTION_NAME, embedding_function=ef)
+                except Exception:
+                    logger.info(f"Collection {COLLECTION_NAME} not found. Creating it...")
+                    cls._collection = cls._chroma_client.create_collection(name=COLLECTION_NAME)
+                    cls._bootstrap_chroma_metadata()
         return cls._collection
 
     @classmethod
-    def get_connection(cls):
-        """Creates and returns a new connection to PostgreSQL."""
+    def get_connection(cls, max_retries: int = 3, retry_delay: float = 1.0):
+        """Creates and returns a new connection to PostgreSQL with retry for serverless wakeups."""
         if not POSTGRES_URL:
             raise ValueError("POSTGRES_URL environment variable is missing.")
-        return psycopg2.connect(POSTGRES_URL)
+        
+        last_err = None
+        for attempt in range(max_retries):
+            try:
+                conn = psycopg2.connect(
+                    POSTGRES_URL,
+                    connect_timeout=15,
+                    keepalives=1,
+                    keepalives_idle=30,
+                    keepalives_interval=10,
+                    keepalives_count=5
+                )
+                return conn
+            except (psycopg2.OperationalError, psycopg2.DatabaseError) as e:
+                last_err = e
+                logger.warning(f"PostgreSQL connection attempt {attempt + 1}/{max_retries} failed: {e}. Retrying in {retry_delay}s...")
+                time.sleep(retry_delay)
+                
+        raise last_err or RuntimeError("Failed to connect to PostgreSQL after multiple attempts.")
 
     @classmethod
     def get_relevant_wmo_ids(cls, query_text: str) -> List[str]:
@@ -161,13 +220,12 @@ class DataService:
                     for col, alias in column_map.items():
                         if col in columns:
                             select_exprs.append(alias)
+
+                    if "file_name" in columns:
+                        select_exprs.append("file_name")
+                    if "profile_id" in columns:
+                        select_exprs.append("profile_id")
                             
-                    query = f"""
-                        SELECT {', '.join(select_exprs)}
-                        FROM argo_profiles
-                        WHERE wmo IN ('{wmo_list}')
-                    """
-                    
                     where_clauses = []
                     if "temp" in columns:
                         where_clauses.append("temp IS NOT NULL")
@@ -187,10 +245,27 @@ class DataService:
                         elif filters.get("parameter_focus") == "oxygen" and "doxy_umolkg" in columns:
                             where_clauses.append("doxy_umolkg IS NOT NULL")
                             
-                    if where_clauses:
-                        query += " AND " + " AND ".join(where_clauses)
-                        
-                    query += f" ORDER BY wmo, profile_date, pres LIMIT {limit}"
+                    where_sql = (" AND " + " AND ".join(where_clauses)) if where_clauses else ""
+
+                    # If multiple floats are requested with a preview limit, balance rows across each float
+                    if len(clean_wmos) > 1 and limit <= 2000:
+                        per_wmo = max(10, limit // len(clean_wmos))
+                        subqueries = []
+                        for w in clean_wmos:
+                            subqueries.append(f"""
+                                (SELECT {', '.join(select_exprs)}
+                                 FROM argo_profiles
+                                 WHERE wmo = '{w}' {where_sql}
+                                 ORDER BY profile_date, pres LIMIT {per_wmo})
+                            """)
+                        query = " UNION ALL ".join(subqueries)
+                    else:
+                        query = f"""
+                            SELECT {', '.join(select_exprs)}
+                            FROM argo_profiles
+                            WHERE wmo IN ('{wmo_list}') {where_sql}
+                            ORDER BY wmo, profile_date, pres LIMIT {limit}
+                        """
                     
                     cur.execute(query)
                     rows = cur.fetchall()
@@ -201,19 +276,78 @@ class DataService:
                     # Process rows into pandas dataframe for cleaning and conversion
                     df = pd.DataFrame(rows)
                     
-                    # Convert numeric columns properly
-                    numeric_cols = ["temperature", "pressure", "salinity", "dissolved_oxygen", "latitude", "longitude"]
+                    # Convert numeric measurement columns properly
+                    numeric_cols = ["temperature", "pressure", "salinity", "dissolved_oxygen"]
                     for col in numeric_cols:
                         if col in df.columns:
                             df[col] = pd.to_numeric(df[col], errors="coerce")
+
+                    # Enrich cycle_number and geolocation coordinates
+                    if not df.empty:
+                        ref_coords = cls._get_reference_coords()
+                        
+                        try:
+                            meta = cls.get_floats_metadata()
+                            wmo_meta_map = {
+                                str(m["wmo"]): (float(m.get("avg_latitude") or 0.0), float(m.get("avg_longitude") or 0.0))
+                                for m in meta
+                            }
+                        except Exception:
+                            wmo_meta_map = {}
+
+                        def resolve_cycle(row):
+                            cyc = row.get("cycle_number")
+                            if pd.notna(cyc) and str(cyc).strip() not in ("", "None", "nan"):
+                                try:
+                                    return int(float(cyc))
+                                except (ValueError, TypeError):
+                                    pass
+                            fn = str(row.get("file_name") or "")
+                            m = re.search(r'_0*(\d+)\.nc', fn)
+                            if m:
+                                return int(m.group(1))
+                            pid = str(row.get("profile_id") or "")
+                            m2 = re.search(r'_(\d+)_', pid)
+                            if m2:
+                                return int(m2.group(1)) + 1
+                            return 1
+
+                        df["cycle_number"] = df.apply(resolve_cycle, axis=1)
+
+                        def resolve_coords(row):
+                            lat = row.get("latitude")
+                            lon = row.get("longitude")
+                            if pd.notna(lat) and pd.notna(lon) and str(lat).strip() not in ("", "None", "nan"):
+                                try:
+                                    return float(lat), float(lon)
+                                except (ValueError, TypeError):
+                                    pass
+                            fn = str(row.get("file_name") or "")
+                            pid = str(row.get("profile_id") or "")
+                            if fn in ref_coords:
+                                return ref_coords[fn]
+                            if pid in ref_coords:
+                                return ref_coords[pid]
+                            w = str(row.get("wmo", "")).split(".")[0]
+                            if w in wmo_meta_map:
+                                return wmo_meta_map[w]
+                            return None, None
+
+                        coords = df.apply(resolve_coords, axis=1)
+                        df["latitude"] = pd.to_numeric([c[0] for c in coords], errors="coerce")
+                        df["longitude"] = pd.to_numeric([c[1] for c in coords], errors="coerce")
+
+                        df.drop(columns=["file_name", "profile_id"], errors="ignore", inplace=True)
                             
                     # Remove date tz if present for serialization
                     if "profile_date" in df.columns:
                         df["profile_date"] = df["profile_date"].astype(str)
                         
+                    from app.utils.helpers import clean_nans
+                    sanitized_records = clean_nans(df.to_dict("records"))
                     return {
-                        "data": df.to_dict("records"),
-                        "count": len(df)
+                        "data": sanitized_records,
+                        "count": len(sanitized_records)
                     }
         except Exception as e:
             logger.error(f"Error fetching data from PostgreSQL: {e}")

@@ -5,17 +5,29 @@ venv/
 backend/venv/
 env/
 .env
+backend/.env
+frontend/.env*
+!frontend/.env.example
 
 # Python caching
 __pycache__/
+backend/**/__pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Production builds
+# Production builds & TS Cache
 dist/
 frontend/dist/
 build/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Runtime generated artifacts
+backend/graphs/*.png
+graphs/*.png
+!backend/graphs/.gitkeep
 
 # Operating System Files
 .DS_Store
