@@ -143,7 +143,8 @@ class IntelligenceEngine:
                 
         if not wmo_ids:
             metadata = DataService.get_floats_metadata()
-            wmo_ids = [f["wmo"] for f in metadata]
+            wmo_ids = [str(f["wmo"]) for f in metadata[:3]]
+
 
         # Step 4: Retrieve data from PostgreSQL
         filters = {}
@@ -159,7 +160,8 @@ class IntelligenceEngine:
         if parameters:
             filters["parameter_focus"] = parameters[0]
             
-        data_res = DataService.get_detailed_data(wmo_ids, filters=filters)
+        data_res = DataService.get_detailed_data(wmo_ids, filters=filters, limit=300)
+
         df = pd.DataFrame(data_res.get("data", []))
 
         # Check if we should generate a graph
@@ -448,13 +450,14 @@ Our primary AI model is currently experiencing rate limits. A direct mathematica
                 
         if not wmo_ids:
             metadata = DataService.get_floats_metadata()
-            wmo_ids = [f["wmo"] for f in metadata]
+            wmo_ids = [str(f["wmo"]) for f in metadata[:3]]
 
         # Step 4: Retrieve data from PostgreSQL
         filters = {}
         if location_filter and "lat_min" in location_filter:
             filters["lat_range"] = (location_filter["lat_min"], location_filter["lat_max"])
             filters["lon_range"] = (location_filter["lon_min"], location_filter["lon_max"])
+
             
         time_period = extracted.get("time_period")
         if time_period and "start_date" in time_period:
@@ -464,8 +467,9 @@ Our primary AI model is currently experiencing rate limits. A direct mathematica
         if parameters:
             filters["parameter_focus"] = parameters[0]
             
-        data_res = DataService.get_detailed_data(wmo_ids, filters=filters)
+        data_res = DataService.get_detailed_data(wmo_ids, filters=filters, limit=300)
         df = pd.DataFrame(data_res.get("data", []))
+
 
         # Check if we should generate a graph
         graph_path = None
