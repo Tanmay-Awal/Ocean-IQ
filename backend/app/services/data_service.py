@@ -49,9 +49,10 @@ class DataService:
                 with cls.get_connection() as conn:
                     with conn.cursor() as cur:
                         cur.execute("""
-                            SELECT file_name, profile_id, latitude, longitude
+                            SELECT DISTINCT ON (wmo) file_name, profile_id, latitude, longitude
                             FROM argo_profiles
-                            WHERE latitude IS NOT NULL
+                            WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+                            ORDER BY wmo, profile_date DESC
                         """)
                         for fn, pid, lat, lon in cur.fetchall():
                             try:
@@ -67,6 +68,7 @@ class DataService:
                 logger.warning(f"Could not load reference coords cache: {e}")
             cls._reference_coords_cache = cache
         return cls._reference_coords_cache
+
 
     @classmethod
     def get_embedding_function(cls) -> Any:
@@ -180,7 +182,8 @@ class DataService:
             return []
 
     @classmethod
-    def get_detailed_data(cls, wmo_ids: List[str], filters: Dict[str, Any] = None, limit: int = 8000) -> Dict[str, Any]:
+    def get_detailed_data(cls, wmo_ids: List[str], filters: Dict[str, Any] = None, limit: int = 1000) -> Dict[str, Any]:
+
         """
         Fetches detailed measurements for specified WMOs from PostgreSQL,
         applying filters such as date ranges and parameter focus.
@@ -256,7 +259,7 @@ class DataService:
                                 (SELECT {', '.join(select_exprs)}
                                  FROM argo_profiles
                                  WHERE wmo = '{w}' {where_sql}
-                                 ORDER BY profile_date, pres LIMIT {per_wmo})
+                                 LIMIT {per_wmo})
                             """)
                         query = " UNION ALL ".join(subqueries)
                     else:
@@ -264,8 +267,9 @@ class DataService:
                             SELECT {', '.join(select_exprs)}
                             FROM argo_profiles
                             WHERE wmo IN ('{wmo_list}') {where_sql}
-                            ORDER BY wmo, profile_date, pres LIMIT {limit}
+                            LIMIT {limit}
                         """
+
                     
                     cur.execute(query)
                     rows = cur.fetchall()
@@ -284,8 +288,6 @@ class DataService:
 
                     # Enrich cycle_number and geolocation coordinates
                     if not df.empty:
-                        ref_coords = cls._get_reference_coords()
-                        
                         try:
                             meta = cls.get_floats_metadata()
                             wmo_meta_map = {
@@ -314,30 +316,23 @@ class DataService:
 
                         df["cycle_number"] = df.apply(resolve_cycle, axis=1)
 
-                        def resolve_coords(row):
-                            lat = row.get("latitude")
-                            lon = row.get("longitude")
-                            if pd.notna(lat) and pd.notna(lon) and str(lat).strip() not in ("", "None", "nan"):
-                                try:
-                                    return float(lat), float(lon)
-                                except (ValueError, TypeError):
-                                    pass
-                            fn = str(row.get("file_name") or "")
-                            pid = str(row.get("profile_id") or "")
-                            if fn in ref_coords:
-                                return ref_coords[fn]
-                            if pid in ref_coords:
-                                return ref_coords[pid]
-                            w = str(row.get("wmo", "")).split(".")[0]
-                            if w in wmo_meta_map:
-                                return wmo_meta_map[w]
-                            return None, None
+                        if "latitude" in df.columns:
+                            df["latitude"] = pd.to_numeric(df["latitude"], errors="coerce")
+                        else:
+                            df["latitude"] = np.nan
 
-                        coords = df.apply(resolve_coords, axis=1)
-                        df["latitude"] = pd.to_numeric([c[0] for c in coords], errors="coerce")
-                        df["longitude"] = pd.to_numeric([c[1] for c in coords], errors="coerce")
+                        if "longitude" in df.columns:
+                            df["longitude"] = pd.to_numeric(df["longitude"], errors="coerce")
+                        else:
+                            df["longitude"] = np.nan
+
+                        # Fill missing coordinates using metadata map
+                        wmo_series = df["wmo"].astype(str).str.split(".").str[0]
+                        df["latitude"] = df["latitude"].fillna(wmo_series.map(lambda w: wmo_meta_map.get(w, (None, None))[0]))
+                        df["longitude"] = df["longitude"].fillna(wmo_series.map(lambda w: wmo_meta_map.get(w, (None, None))[1]))
 
                         df.drop(columns=["file_name", "profile_id"], errors="ignore", inplace=True)
+
                             
                     # Remove date tz if present for serialization
                     if "profile_date" in df.columns:
