@@ -246,114 +246,113 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 animate-fade-in-up">
       
-      {/* Top Banner & Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-border/40">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+      {/* Top Banner & Header in Modern Landing Page Style */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/60 dark:border-white/10">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#0284c7] dark:text-cyan-400 tracking-[0.2em] uppercase">
+            <span>REAL-TIME OCEANOGRAPHIC ARRAY</span>
+            <span className="w-6 h-[1.5px] bg-[#0284c7]/60 dark:bg-cyan-400/60" />
+          </div>
+          <div className="flex items-center gap-3">
+            <h1 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#0c2340] dark:text-white">
               Ocean Telemetry Operations
             </h1>
-            <Badge variant="active" dot>Array Synced</Badge>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Live Array
+            </span>
           </div>
-          <p className="text-sm text-slate-800 dark:text-slate-300 font-medium">
-            Real-time physical oceanography analytics, vertical CTD soundings, and ARGO float trajectory monitoring.
+          <p className="text-sm text-slate-600 dark:text-slate-300 font-normal max-w-2xl">
+            Autonomous ARGO profiling float analytics, vertical CTD soundings, and 3D bathymetric trajectory monitoring across the Indian Ocean basin.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <Link href="/explore">
-            <Button variant="secondary" size="sm" className="text-xs hover:scale-[1.02] active:scale-[0.98] transition-all">
-              <Download className="w-3.5 h-3.5 mr-1.5 text-emerald-500" />
-              Export Datasets
-            </Button>
+            <button className="h-10 px-5 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-[#0c2340] dark:text-white hover:bg-white dark:hover:bg-slate-800 text-xs sm:text-sm font-medium flex items-center gap-2 shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+              <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Export Matrix</span>
+            </button>
           </Link>
           <Link href="/chat">
-            <Button variant="cyan" size="sm" className="text-xs shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Ask Aqua AI
-            </Button>
+            <button className="h-10 px-5 rounded-full bg-[#0c2340] hover:bg-[#07172b] dark:bg-white dark:text-[#0c2340] dark:hover:bg-slate-100 text-white text-xs sm:text-sm font-medium flex items-center gap-2 shadow-md shadow-black/10 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-300 dark:text-[#0284c7]" />
+              <span>Launch Aqua AI</span>
+            </button>
           </Link>
         </div>
       </div>
 
-      {/* Top Calibrated Metric HUD with Animated Statistics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Top Frosted Glass Metric HUD with Animated Statistics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Active Float Fleet */}
-        <Card variant="elevated" className="card-hover-lift">
-          <CardContent className="p-5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs font-mono text-slate-800 dark:text-slate-400 uppercase tracking-wider font-semibold">Active Array</p>
-              <h3 className="text-2xl sm:text-3xl font-bold font-mono text-foreground">
-                <CountUp end={stats.activeCount} duration={1400} /> <span className="text-xs font-normal text-slate-600 dark:text-slate-400 font-sans font-medium">Units</span>
-              </h3>
-              <p className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-mono font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping" />
-                <CountUp end={stats.uptime} duration={1200} suffix="% Fleet Operational" />
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-ocean-cyan/10 border border-ocean-cyan/20 flex items-center justify-center text-ocean-cyan shrink-0 shadow-[0_0_15px_rgba(6,182,212,0.15)] transition-transform duration-300 hover:rotate-12">
-              <Radio className="w-6 h-6" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="group rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-5 shadow-[0_10px_30px_rgba(2,132,199,0.06)] hover:shadow-[0_20px_45px_rgba(2,132,199,0.14)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Active Array</p>
+            <h3 className="text-2xl sm:text-3xl font-bold font-mono text-[#0c2340] dark:text-white">
+              <CountUp end={stats.activeCount} duration={1400} /> <span className="text-xs font-normal text-slate-500 dark:text-slate-400 font-sans">Units</span>
+            </h3>
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-mono font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping" />
+              <CountUp end={stats.uptime} duration={1200} suffix="% Fleet Operational" />
+            </p>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-sky-100/80 dark:bg-sky-950/60 border border-sky-200/60 dark:border-sky-800/50 flex items-center justify-center text-[#0284c7] dark:text-cyan-300 shrink-0 shadow-xs group-hover:scale-110 group-hover:bg-[#0284c7] group-hover:text-white transition-all duration-300">
+            <Radio className="w-6 h-6" />
+          </div>
+        </div>
 
         {/* Total Profiles Soundings */}
-        <Card variant="elevated" className="card-hover-lift">
-          <CardContent className="p-5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs font-mono text-slate-800 dark:text-slate-400 uppercase tracking-wider font-semibold">Indexed Profiles</p>
-              <h3 className="text-2xl sm:text-3xl font-bold font-mono text-foreground">
-                <CountUp end={stats.totalProfiles} separator="," duration={1800} /> <span className="text-xs font-normal text-slate-600 dark:text-slate-400 font-sans font-medium">Soundings</span>
-              </h3>
-              <p className="text-xs text-slate-700 dark:text-slate-400 flex items-center gap-1 font-mono font-medium">
-                <BarChart2 className="w-3.5 h-3.5 text-emerald-500" />
-                0m &rarr; 2000m Depth
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.15)] transition-transform duration-300 hover:rotate-12">
-              <Layers className="w-6 h-6" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="group rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-5 shadow-[0_10px_30px_rgba(2,132,199,0.06)] hover:shadow-[0_20px_45px_rgba(2,132,199,0.14)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Indexed Profiles</p>
+            <h3 className="text-2xl sm:text-3xl font-bold font-mono text-[#0c2340] dark:text-white">
+              <CountUp end={stats.totalProfiles} separator="," duration={1800} /> <span className="text-xs font-normal text-slate-500 dark:text-slate-400 font-sans">Soundings</span>
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1 font-mono font-medium">
+              <BarChart2 className="w-3.5 h-3.5 text-emerald-500" />
+              0m &rarr; 2000m Depth
+            </p>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 shadow-xs group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+            <Layers className="w-6 h-6" />
+          </div>
+        </div>
 
         {/* Mean Temperature */}
-        <Card variant="elevated" className="card-hover-lift">
-          <CardContent className="p-5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs font-mono text-slate-800 dark:text-slate-400 uppercase tracking-wider font-semibold">Upper Basin Temp</p>
-              <h3 className="text-2xl sm:text-3xl font-bold font-mono text-foreground">
-                <CountUp end={stats.avgTemp} decimals={1} suffix="°C" duration={1600} />
-              </h3>
-              <p className="text-xs text-slate-700 dark:text-slate-400 flex items-center gap-1 font-mono font-medium">
-                <Droplets className="w-3.5 h-3.5 text-sky-500" />
-                Salinity: <CountUp end={stats.avgSal} decimals={1} suffix=" PSU" duration={1400} />
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 shrink-0 shadow-[0_0_15px_rgba(244,63,94,0.15)] transition-transform duration-300 hover:rotate-12">
-              <Thermometer className="w-6 h-6" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="group rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-5 shadow-[0_10px_30px_rgba(2,132,199,0.06)] hover:shadow-[0_20px_45px_rgba(2,132,199,0.14)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Upper Basin Temp</p>
+            <h3 className="text-2xl sm:text-3xl font-bold font-mono text-[#0c2340] dark:text-white">
+              <CountUp end={stats.avgTemp} decimals={1} suffix="°C" duration={1600} />
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1 font-mono font-medium">
+              <Droplets className="w-3.5 h-3.5 text-sky-500" />
+              Salinity: <CountUp end={stats.avgSal} decimals={1} suffix=" PSU" duration={1400} />
+            </p>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-rose-100/80 dark:bg-rose-950/60 border border-rose-200/60 dark:border-rose-800/50 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0 shadow-xs group-hover:scale-110 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">
+            <Thermometer className="w-6 h-6" />
+          </div>
+        </div>
 
         {/* Sub-Basin Coverage */}
-        <Card variant="elevated" className="card-hover-lift">
-          <CardContent className="p-5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs font-mono text-slate-800 dark:text-slate-400 uppercase tracking-wider font-semibold">Spatial Coverage</p>
-              <h3 className="text-2xl sm:text-3xl font-bold font-mono text-foreground">
-                <CountUp end={stats.regions} duration={1200} /> <span className="text-xs font-normal text-slate-600 dark:text-slate-400 font-sans font-medium">Zones</span>
-              </h3>
-              <p className="text-xs text-purple-600 dark:text-purple-400 flex items-center gap-1 font-mono font-medium">
-                <MapPin className="w-3.5 h-3.5" />
-                Indian Ocean Basin
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 shrink-0 shadow-[0_0_15px_rgba(168,85,247,0.15)] transition-transform duration-300 hover:rotate-12">
-              <Compass className="w-6 h-6" />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="group rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-5 shadow-[0_10px_30px_rgba(2,132,199,0.06)] hover:shadow-[0_20px_45px_rgba(2,132,199,0.14)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Spatial Coverage</p>
+            <h3 className="text-2xl sm:text-3xl font-bold font-mono text-[#0c2340] dark:text-white">
+              <CountUp end={stats.regions} duration={1200} /> <span className="text-xs font-normal text-slate-500 dark:text-slate-400 font-sans">Zones</span>
+            </h3>
+            <p className="text-xs text-[#0284c7] dark:text-cyan-400 flex items-center gap-1 font-mono font-medium">
+              <MapPin className="w-3.5 h-3.5" />
+              Indian Ocean Basin
+            </p>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-purple-100/80 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/50 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0 shadow-xs group-hover:scale-110 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
+            <Compass className="w-6 h-6" />
+          </div>
+        </div>
 
       </div>
 
@@ -361,120 +360,106 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Globe Visualization */}
-        <Card variant="elevated" className="lg:col-span-2 card-hover-lift">
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
+        <div className="lg:col-span-2 rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-6 shadow-[0_10px_30px_rgba(2,132,199,0.06)] flex flex-col justify-between">
+          <div className="flex flex-row items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <CardTitle className="text-base font-semibold text-foreground">
+              <h3 className="text-base font-bold text-[#0c2340] dark:text-white tracking-tight">
                 Bathymetric Geospatial Explorer
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Interactive 3D orthographic globe of autonomous ARGO profiling floats in the Indian Ocean
-              </CardDescription>
+              </p>
             </div>
-            <Badge variant="cyan" className="font-mono text-[10px]">Orthographic 3D</Badge>
-          </CardHeader>
-          <CardContent>
+            <span className="px-2.5 py-1 rounded-full bg-sky-100 dark:bg-sky-950/80 text-[#0284c7] dark:text-cyan-300 border border-sky-200 dark:border-sky-800/50 font-mono text-[10px] font-semibold">
+              Orthographic 3D
+            </span>
+          </div>
+          <div className="pt-4">
             <GlobeMap floats={data} />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* AI Research Dispatch & Quick Queries */}
-        <Card variant="elevated" className="flex flex-col justify-between card-hover-lift">
-          <div className="space-y-3.5">
-            <CardHeader className="pb-1">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-ocean-cyan" />
+        <div className="rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-6 shadow-[0_10px_30px_rgba(2,132,199,0.06)] flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#0284c7] to-[#06b6d4] text-white flex items-center justify-center shrink-0">
+                  <Sparkles className="w-3.5 h-3.5" />
+                </div>
+                <h3 className="text-base font-bold text-[#0c2340] dark:text-white tracking-tight">
                   Aqua AI Dispatch
-                </CardTitle>
-                <span className="text-[10px] font-mono text-ocean-cyan px-2 py-0.5 rounded-full bg-ocean-cyan/10 border border-ocean-cyan/20">
-                  RAG Live
-                </span>
+                </h3>
               </div>
-              <CardDescription>
-                Execute conversational queries with spatial SQL translation
-              </CardDescription>
-            </CardHeader>
+              <span className="text-[10px] font-mono text-[#0284c7] dark:text-cyan-300 px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/80 border border-sky-200 dark:border-sky-800/50 font-semibold">
+                RAG Live
+              </span>
+            </div>
 
-            <CardContent className="space-y-3 pt-0">
-              {/* Array Calibration Banner */}
-              <div className="rounded-xl bg-surface-elevated/70 border border-border/60 p-3 space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-slate-800 dark:text-slate-400 font-semibold">Array Telemetry</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">100% Calibrated</span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-gradient-to-r from-ocean-cyan to-emerald-400 h-full w-full rounded-full" />
-                </div>
-                <p className="text-[11px] text-slate-800 dark:text-slate-300 leading-relaxed font-medium">
-                  Thermodynamic calculations ready for Mixed Layer Depth (MLD) and pycnocline gradient detection.
-                </p>
+            {/* Array Calibration Banner */}
+            <div className="rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/70 dark:border-white/10 p-3.5 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-600 dark:text-slate-400 font-semibold">Array Telemetry</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">100% Calibrated</span>
               </div>
+              <div className="w-full bg-slate-200/70 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div className="bg-gradient-to-r from-[#0284c7] via-[#06b6d4] to-emerald-400 h-full w-full rounded-full" />
+              </div>
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                Thermodynamic calculations ready for Mixed Layer Depth (MLD) and pycnocline gradient detection.
+              </p>
+            </div>
 
-              {/* Direct Quick Query Input Bar */}
-              <form 
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  const form = e.currentTarget
-                  const input = form.elements.namedItem('query') as HTMLInputElement
-                  if (input && input.value.trim()) {
-                    window.location.href = `/chat?query=${encodeURIComponent(input.value.trim())}`
-                  }
-                }}
-                className="relative flex items-center"
+            {/* Direct Quick Query Input Bar */}
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault()
+                const form = e.currentTarget
+                const input = form.elements.namedItem('query') as HTMLInputElement
+                if (input && input.value.trim()) {
+                  window.location.href = `/chat?query=${encodeURIComponent(input.value.trim())}`
+                }
+              }}
+              className="relative flex items-center"
+            >
+              <input
+                type="text"
+                name="query"
+                placeholder="Ask Aqua anything (e.g. 'MLD for 2902217')..."
+                className="w-full pl-4 pr-11 py-2.5 rounded-2xl text-xs font-mono bg-white/80 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 text-foreground placeholder:text-slate-400 focus:outline-none focus:border-[#0284c7] focus:ring-2 focus:ring-[#0284c7]/20 shadow-xs transition-all"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 w-7 h-7 rounded-xl bg-[#0c2340] dark:bg-white text-white dark:text-[#0c2340] hover:bg-[#07172b] dark:hover:bg-slate-100 flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+                title="Ask Aqua AI"
               >
-                <input
-                  type="text"
-                  name="query"
-                  placeholder="Ask Aqua anything (e.g. 'MLD for 2902217')..."
-                  className="w-full pl-3.5 pr-10 py-2 rounded-xl text-xs font-mono bg-surface-base border border-border text-foreground placeholder:text-slate-400 focus:outline-none focus:border-ocean-cyan/60 focus:ring-1 focus:ring-ocean-cyan/30 shadow-sm"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-1.5 w-6 h-6 rounded-lg bg-ocean-cyan/20 hover:bg-ocean-cyan text-ocean-cyan hover:text-slate-950 flex items-center justify-center transition-colors cursor-pointer"
-                  title="Ask Aqua AI"
-                >
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </form>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </form>
 
-              {/* Suggested Scientific Queries with Distinct Gap and Padding */}
-              <div className="pt-1">
-                <p className="text-[10px] font-mono font-bold text-slate-800 dark:text-slate-400 uppercase tracking-wider mb-2.5">
-                  Suggested Scientific Queries
-                </p>
-                <div className="flex flex-col gap-2.5">
-                  <QueryLink query="Calculate Mixed Layer Depth for WMO 2902217" />
-                  <QueryLink query="Plot a depth profile for float 2902210" />
-                  <QueryLink query="Compare salinity between WMO 2902210 and 2902217" />
-                  <QueryLink query="Show average temperature in Northern Arabian Sea" />
-                  <QueryLink query="Explain the ΔT = 0.2°C threshold method" />
-                </div>
+            {/* Suggested Scientific Queries */}
+            <div className="pt-1">
+              <p className="text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">
+                Suggested Scientific Queries
+              </p>
+              <div className="flex flex-col gap-2">
+                <QueryLink query="Calculate Mixed Layer Depth for WMO 2902217" />
+                <QueryLink query="Plot a depth profile for float 2902210" />
+                <QueryLink query="Compare salinity between WMO 2902210 and 2902217" />
+                <QueryLink query="Show average temperature in Northern Arabian Sea" />
               </div>
-
-              {/* Intelligence Pipeline Capabilities Chips */}
-              <div className="pt-2 border-t border-border/40 grid grid-cols-2 gap-2 text-[10px] font-mono">
-                <div className="p-2 rounded-lg bg-surface-elevated/70 border border-border/50">
-                  <span className="text-slate-500 block font-medium">LLM Reasoning</span>
-                  <span className="text-foreground font-bold">Gemini 2.0 Thinking</span>
-                </div>
-                <div className="p-2 rounded-lg bg-surface-elevated/70 border border-border/50">
-                  <span className="text-slate-500 block font-medium">Vector Index</span>
-                  <span className="text-ocean-cyan font-bold">ChromaDB Synced</span>
-                </div>
-              </div>
-            </CardContent>
+            </div>
           </div>
 
-          <div className="p-6 pt-2">
+          <div className="pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
             <Link href="/chat">
-              <Button variant="cyan" className="w-full justify-between group shadow-md hover:shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+              <button className="w-full h-11 px-5 rounded-2xl bg-[#0c2340] hover:bg-[#07172b] dark:bg-white dark:text-[#0c2340] dark:hover:bg-slate-100 text-white font-medium text-xs flex items-center justify-between shadow-md shadow-black/10 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer group">
                 <span>Open Full Research Workspace</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
-              </Button>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              </button>
             </Link>
           </div>
-        </Card>
+        </div>
 
       </div>
 
@@ -482,19 +467,21 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* CTD Vertical Temperature Curves */}
-        <Card variant="elevated" className="card-hover-lift">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div className="rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-6 shadow-[0_10px_30px_rgba(2,132,199,0.06)] flex flex-col justify-between">
+          <div className="flex flex-row items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <CardTitle className="text-base font-semibold text-foreground">
+              <h3 className="text-base font-bold text-[#0c2340] dark:text-white tracking-tight">
                 Vertical Temperature Profiles (CTD Soundings)
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Averaged temperature curves binned at 50m intervals {profileCurves?.wmo1 ? `(WMO ${profileCurves.wmo1} vs WMO ${profileCurves.wmo2 || '—'})` : ''}
-              </CardDescription>
+              </p>
             </div>
-            <Badge variant="mld" className="text-[10px] font-mono">CTD Thermocline</Badge>
-          </CardHeader>
-          <CardContent className="h-[340px]">
+            <span className="px-2.5 py-1 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50 text-[10px] font-mono font-semibold">
+              CTD Thermocline
+            </span>
+          </div>
+          <div className="h-[340px] pt-4">
             {profileCurves?.curves && profileCurves.curves.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
                 <AreaChart data={profileCurves.curves} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -504,8 +491,8 @@ export default function DashboardPage() {
                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorTemp2" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#0284c7" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#0284c7" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid 
@@ -543,7 +530,7 @@ export default function DashboardPage() {
                   type="monotone" 
                   dataKey="temp2" 
                   name={profileCurves?.wmo2 ? `Float ${profileCurves.wmo2}` : "Float 2"} 
-                  stroke="#06b6d4" 
+                  stroke="#0284c7" 
                   strokeWidth={2.5} 
                   fillOpacity={1} 
                   fill="url(#colorTemp2)" 
@@ -557,23 +544,25 @@ export default function DashboardPage() {
                 <span>No vertical profile curves synced from telemetry</span>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Profile Records Distribution */}
-        <Card variant="elevated" className="card-hover-lift">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div className="rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-6 shadow-[0_10px_30px_rgba(2,132,199,0.06)] flex flex-col justify-between">
+          <div className="flex flex-row items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <CardTitle className="text-base font-semibold text-foreground">
+              <h3 className="text-base font-bold text-[#0c2340] dark:text-white tracking-tight">
                 Telemetry Records Volume by Float
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 High-density measurement soundings count per autonomous profiling float
-              </CardDescription>
+              </p>
             </div>
-            <Badge variant="cyan" className="text-[10px] font-mono">Records / Node</Badge>
-          </CardHeader>
-          <CardContent className="h-[340px]">
+            <span className="px-2.5 py-1 rounded-full bg-sky-100 dark:bg-sky-950/80 text-[#0284c7] dark:text-cyan-300 border border-sky-200 dark:border-sky-800/50 text-[10px] font-mono font-semibold">
+              Records / Node
+            </span>
+          </div>
+          <div className="h-[340px] pt-4">
             {data && data.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
                 <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
@@ -609,24 +598,24 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-xs font-mono text-slate-500 gap-2">
-                <Radio className="w-5 h-5 text-ocean-cyan animate-pulse" />
+                <Radio className="w-5 h-5 text-[#0284c7] animate-pulse" />
                 <span>No autonomous float measurements indexed</span>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
       </div>
 
       {/* Float Telemetry Inventory Section with Search & Filtering */}
-      <div className="space-y-4 pt-2">
+      <div className="space-y-4 pt-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
-              <Radio className="w-4 h-4 text-ocean-cyan" />
+            <h2 className="text-xl font-serif text-[#0c2340] dark:text-white tracking-tight flex items-center gap-2">
+              <Radio className="w-4 h-4 text-[#0284c7]" />
               Autonomous Float Array Inventory
             </h2>
-            <p className="text-xs text-slate-700 dark:text-slate-400 font-medium">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Showing {filteredFloats.length} of {data.length} telemetry units in database
             </p>
           </div>
@@ -634,13 +623,13 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-3">
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search WMO or region..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 pl-9 pr-3 rounded-xl bg-surface-card border border-border text-xs text-foreground placeholder:text-slate-500 focus:outline-none focus:border-ocean-cyan/50 focus:ring-1 focus:ring-ocean-cyan/20 w-48 sm:w-60 shadow-sm font-medium"
+                className="h-10 pl-9 pr-3.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 text-xs text-foreground placeholder:text-slate-400 focus:outline-none focus:border-[#0284c7] focus:ring-2 focus:ring-[#0284c7]/20 w-48 sm:w-60 shadow-xs font-mono"
               />
             </div>
 
@@ -648,7 +637,7 @@ export default function DashboardPage() {
             <select
               value={regionFilter}
               onChange={(e) => setRegionFilter(e.target.value)}
-              className="h-9 px-3 rounded-xl bg-surface-card border border-border text-xs text-foreground focus:outline-none focus:border-ocean-cyan/50 cursor-pointer shadow-sm font-medium"
+              className="h-10 px-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 text-xs text-foreground focus:outline-none focus:border-[#0284c7] cursor-pointer shadow-xs font-medium"
             >
               {regionsList.map((r) => (
                 <option key={r} value={r}>
@@ -661,94 +650,94 @@ export default function DashboardPage() {
 
         {/* Float Cards Grid */}
         {filteredFloats.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-surface-card border border-border text-center text-xs font-mono text-slate-500">
+          <div className="p-8 rounded-3xl bg-white/60 dark:bg-[#0a1222]/60 border border-slate-200/60 dark:border-white/10 text-center text-xs font-mono text-slate-500">
             No autonomous float profiles found.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filteredFloats.map((float: any) => {
               const color = getFloatColor(float.wmo)
               const firstYear = float.first_profile ? float.first_profile.split("-")[0] : "—"
               const lastYear = float.last_profile ? float.last_profile.split("-")[0] : "—"
 
             return (
-              <Card 
+              <div 
                 key={float.wmo} 
-                variant="subtle"
-                className="card-hover-lift flex flex-col justify-between"
+                className="group rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-5 shadow-[0_8px_24px_rgba(2,132,199,0.05)] hover:shadow-[0_16px_36px_rgba(2,132,199,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
-                <CardContent className="p-5 space-y-4">
+                <div className="space-y-4">
                   {/* Top Bar */}
                   <div className="flex items-start justify-between">
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-700 dark:text-slate-400 font-semibold">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
                         ARGO Profiler
                       </span>
-                      <p className="text-xl font-bold font-mono text-foreground tracking-tight flex items-center gap-2 mt-0.5">
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+                      <p className="text-xl font-bold font-mono text-[#0c2340] dark:text-white tracking-tight flex items-center gap-2 mt-0.5">
+                        <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white/30 shrink-0" style={{ backgroundColor: color }} />
                         {float.wmo}
                       </p>
                     </div>
-                    <Badge variant="active" dot className="text-[10px]">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       {float.active || "Active"}
-                    </Badge>
+                    </span>
                   </div>
 
                   {/* Metadata List */}
-                  <div className="space-y-2 text-xs text-slate-700 dark:text-slate-300 font-mono font-medium">
+                  <div className="space-y-2 text-xs font-mono font-medium">
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-600 dark:text-slate-400">Region</span>
-                      <span className="text-foreground font-bold truncate max-w-[150px]" title={float.region}>
+                      <span className="text-slate-500 dark:text-slate-400">Region</span>
+                      <span className="text-[#0c2340] dark:text-white font-bold truncate max-w-[150px]" title={float.region}>
                         {float.region}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-600 dark:text-slate-400">Measurements</span>
-                      <span className="text-ocean-cyan font-bold">
+                      <span className="text-slate-500 dark:text-slate-400">Measurements</span>
+                      <span className="text-[#0284c7] dark:text-cyan-400 font-bold">
                         <CountUp end={float.measurements_count || 0} separator="," duration={1200} />
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-600 dark:text-slate-400">Profile Span</span>
-                      <span className="text-foreground font-semibold">
+                      <span className="text-slate-500 dark:text-slate-400">Profile Span</span>
+                      <span className="text-slate-700 dark:text-slate-200 font-semibold">
                         {firstYear} &rarr; {lastYear}
                       </span>
                     </div>
                   </div>
 
                   {/* Temperature & Salinity Pill */}
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-surface-elevated/70 border border-border/50 text-center font-mono">
+                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-white/10 text-center font-mono">
                     <div>
-                      <p className="text-[9px] text-slate-700 dark:text-slate-400 uppercase font-semibold">Avg Temp</p>
-                      <p className="text-xs font-bold text-rose-600 dark:text-rose-300 mt-0.5">
+                      <p className="text-[9px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Avg Temp</p>
+                      <p className="text-xs font-bold text-rose-600 dark:text-rose-400 mt-0.5">
                         {float.avg_temp != null ? `${float.avg_temp.toFixed(1)}°C` : "N/A"}
                       </p>
                     </div>
-                    <div className="border-l border-border/50">
-                      <p className="text-[9px] text-slate-700 dark:text-slate-400 uppercase font-semibold">Avg Sal</p>
-                      <p className="text-xs font-bold text-sky-600 dark:text-sky-300 mt-0.5">
+                    <div className="border-l border-slate-200 dark:border-slate-800">
+                      <p className="text-[9px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Avg Sal</p>
+                      <p className="text-xs font-bold text-sky-600 dark:text-sky-400 mt-0.5">
                         {float.avg_sal != null ? `${float.avg_sal.toFixed(1)} PSU` : "N/A"}
                       </p>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/40">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                     <Link href={`/chat?query=${encodeURIComponent(`Analyze float ${float.wmo} thermodynamic parameters and MLD`)}`}>
-                      <button className="w-full py-2 px-2.5 rounded-lg bg-surface-card hover:bg-ocean-cyan/15 border border-border hover:border-ocean-cyan/40 text-slate-900 dark:text-slate-200 hover:text-ocean-cyan text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
-                        <MessageSquare className="w-3.5 h-3.5 text-ocean-cyan" />
+                      <button className="w-full py-2 px-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 hover:bg-[#0284c7] hover:text-white border border-slate-200/70 dark:border-white/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs hover:scale-[1.02] active:scale-[0.98]">
+                        <MessageSquare className="w-3.5 h-3.5 text-[#0284c7] group-hover:text-white transition-colors" />
                         <span>Analyze</span>
                       </button>
                     </Link>
                     <Link href={`/chat?query=${encodeURIComponent(`Plot a vertical depth profile for float ${float.wmo}`)}`}>
-                      <button className="w-full py-2 px-2.5 rounded-lg bg-surface-card hover:bg-purple-500/15 border border-border hover:border-purple-500/40 text-slate-900 dark:text-slate-200 hover:text-purple-400 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
-                        <BarChart2 className="w-3.5 h-3.5 text-purple-500" />
+                      <button className="w-full py-2 px-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 hover:bg-purple-600 hover:text-white border border-slate-200/70 dark:border-white/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs hover:scale-[1.02] active:scale-[0.98]">
+                        <BarChart2 className="w-3.5 h-3.5 text-purple-600 group-hover:text-white transition-colors" />
                         <span>Graph</span>
                       </button>
                     </Link>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )
           })}
         </div>
@@ -762,11 +751,11 @@ export default function DashboardPage() {
 function QueryLink({ query }: { query: string }) {
   return (
     <Link href={`/chat?query=${encodeURIComponent(query)}`} className="block w-full">
-      <div className="group flex items-center justify-between px-3.5 py-3 rounded-xl border border-border/80 bg-surface-card hover:bg-ocean-cyan/10 hover:border-ocean-cyan/40 transition-all cursor-pointer card-hover-lift shadow-sm">
-        <span className="text-xs text-slate-900 dark:text-slate-200 font-medium group-hover:text-ocean-cyan transition-colors truncate pr-2">
+      <div className="group flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-slate-900/60 hover:bg-sky-50 dark:hover:bg-sky-950/40 hover:border-sky-300 dark:hover:border-sky-800 transition-all cursor-pointer shadow-xs">
+        <span className="text-xs text-slate-700 dark:text-slate-200 font-medium group-hover:text-[#0284c7] dark:group-hover:text-cyan-300 transition-colors truncate pr-2">
           {query}
         </span>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-ocean-cyan shrink-0 transition-all group-hover:translate-x-0.5" />
+        <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0284c7] dark:group-hover:text-cyan-300 shrink-0 transition-transform group-hover:translate-x-0.5" />
       </div>
     </Link>
   )

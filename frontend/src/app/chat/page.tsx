@@ -369,37 +369,38 @@ function ChatContent() {
   const activeCategoryData = promptCategories.find(c => c.id === activeCategory) || promptCategories[0]
 
   return (
-    <div className="flex flex-col h-full bg-background text-foreground overflow-hidden relative transition-colors duration-300">
+    <div className="flex flex-col h-full bg-[#f8fafc] dark:bg-[#030712] text-[#0c2340] dark:text-slate-100 overflow-hidden relative transition-colors duration-300">
       
+      {/* Background Radial Ambiance */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(2,132,199,0.06),transparent)] dark:bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(6,182,212,0.1),transparent)]" />
+
       {/* Top Session Toolbar */}
-      <header className="h-14 shrink-0 border-b border-border/50 px-6 flex items-center justify-between bg-surface-base/90 backdrop-blur-xl z-20 transition-colors duration-300">
+      <header className="h-16 shrink-0 border-b border-slate-200/60 dark:border-white/10 px-6 flex items-center justify-between bg-white/70 dark:bg-[#071326]/75 backdrop-blur-2xl z-20 transition-colors duration-300">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-ocean-cyan to-ocean-blue flex items-center justify-center text-slate-950 shadow-[0_0_12px_rgba(6,182,212,0.3)]">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0284c7] via-[#06b6d4] to-[#38bdf8] flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
             <Sparkles className="w-4 h-4 font-bold" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-sm font-bold text-foreground tracking-tight">Aqua Research Assistant</h1>
-              <Badge variant="cyan" className="font-mono text-[9px] py-0 px-1.5">Dual RAG Engine</Badge>
+              <h1 className="text-sm font-bold text-[#0c2340] dark:text-white tracking-tight">Aqua Research Assistant</h1>
+              <span className="font-mono text-[9px] py-0.5 px-2 rounded-full bg-sky-100 dark:bg-sky-950/80 text-[#0284c7] dark:text-cyan-300 border border-sky-200 dark:border-sky-800/50 font-semibold">Dual RAG Engine</span>
             </div>
-            <p className="text-[10px] text-slate-700 dark:text-slate-400 font-mono font-medium">
-              Google Gemini 2.0 &bull; Groq Llama 3.3 &bull; ChromaDB
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono font-medium">
+              Google Gemini 2.0 &bull; ChromaDB Vector &bull; ARGO Telemetry
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-3">
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={handleNewChat}
-            className="text-xs font-semibold text-slate-800 dark:text-slate-300 hover:text-foreground"
+            className="h-9 px-4 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/80 dark:border-white/10 text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-[#0284c7] dark:hover:text-cyan-300 flex items-center gap-1.5 shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5 mr-1" />
+            <Plus className="w-3.5 h-3.5" />
             <span>New Session</span>
-          </Button>
+          </button>
 
-          <div className="pl-1 border-l border-border/40">
+          <div className="pl-1 border-l border-slate-200 dark:border-slate-800">
             <ThemeToggle />
           </div>
         </div>
@@ -407,7 +408,7 @@ function ChatContent() {
 
       {/* Main Conversation Stream */}
       <div className={cn(
-        "flex-1 min-h-0 overflow-y-auto px-4 md:px-8 transition-all flex flex-col",
+        "flex-1 min-h-0 overflow-y-auto px-4 md:px-8 transition-all flex flex-col relative z-10",
         messages.length === 0 ? "" : "space-y-6 py-6"
       )}>
         
@@ -416,20 +417,21 @@ function ChatContent() {
           <div className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto flex flex-col items-center my-auto pt-3 pb-6 sm:py-6 md:py-8 animate-fade-in-up">
             
             {/* Header Block with Responsive Proportions */}
-            <div className="text-center space-y-2 sm:space-y-3 max-w-xl mx-auto mb-4 sm:mb-6">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-ocean-cyan/10 border border-ocean-cyan/30 flex items-center justify-center text-ocean-cyan mx-auto shadow-[0_0_20px_rgba(6,182,212,0.25)] mb-2.5 sm:mb-3">
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 font-bold" />
+            <div className="text-center space-y-2 sm:space-y-3 max-w-xl mx-auto mb-5 sm:mb-7">
+              <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#0284c7] dark:text-cyan-400 tracking-[0.2em] uppercase">
+                <span>CONVERSATIONAL OCEAN INTELLIGENCE</span>
+                <span className="w-6 h-[1.5px] bg-[#0284c7]/60 dark:bg-cyan-400/60" />
               </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
-                Oceanographic Research Intelligence
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-[#0c2340] dark:text-white">
+                Oceanographic Research AI
               </h2>
-              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium pt-0.5 sm:pt-1 max-w-lg mx-auto">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal pt-1 max-w-lg mx-auto">
                 Pose queries in natural language. Aqua translates requests into spatial SQL, calculates thermodynamic indices, and generates dynamic Plotly depth profiles.
               </p>
             </div>
 
             {/* Category Filter Pills with Responsive Flow */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 mb-4 sm:mb-6 w-full">
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-6 w-full">
               {promptCategories.map((cat) => {
                 const Icon = cat.icon
                 const isActive = activeCategory === cat.id
@@ -438,34 +440,34 @@ function ChatContent() {
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
                     className={cn(
-                      "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border",
+                      "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer border",
                       isActive 
-                        ? 'bg-ocean-cyan/15 border-ocean-cyan/40 text-ocean-cyan dark:text-white shadow-[0_0_15px_rgba(6,182,212,0.15)] font-bold' 
-                        : 'bg-surface-card border-border text-slate-800 dark:text-slate-300 hover:text-foreground hover:border-slate-400 dark:hover:border-slate-600 font-semibold'
+                        ? 'bg-gradient-to-r from-sky-500/15 to-cyan-500/10 border-[#0284c7]/40 dark:border-cyan-400/40 text-[#0284c7] dark:text-cyan-300 shadow-xs font-semibold' 
+                        : 'bg-white/80 dark:bg-slate-900/80 border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:text-[#0c2340] dark:hover:text-white hover:border-slate-300'
                     )}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-ocean-cyan' : 'text-slate-500'}`} />
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#0284c7] dark:text-cyan-300' : 'text-slate-400'}`} />
                     <span>{cat.name}</span>
                   </button>
                 )
               })}
             </div>
 
-            {/* 4 Suggested Query Cards - Responsive Heights & Balanced Gaps */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4.5 w-full mb-4 sm:mb-6">
+            {/* 4 Suggested Query Cards - Frosted Glass Aesthetics */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-6">
               {activeCategoryData.prompts.map((promptText, idx) => (
                 <div
                   key={idx}
                   onClick={() => handleSend(promptText)}
-                  className="p-3.5 sm:p-4.5 rounded-xl sm:rounded-2xl bg-surface-card border border-border/80 hover:border-ocean-cyan/50 hover:bg-surface-elevated/70 transition-all duration-200 cursor-pointer group flex flex-col justify-between card-hover-lift shadow-sm min-h-[92px] sm:min-h-[108px]"
+                  className="p-5 rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 hover:border-[#0284c7]/50 dark:hover:border-cyan-400/40 hover:shadow-[0_16px_36px_rgba(2,132,199,0.12)] hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-xs min-h-[110px]"
                 >
-                  <span className="text-[10px] font-mono text-ocean-cyan uppercase tracking-wider mb-1.5 flex items-center gap-1 font-bold">
-                    <Radio className="w-2.5 h-2.5 text-ocean-cyan animate-pulse" /> Suggested Query
+                  <span className="text-[10px] font-mono text-[#0284c7] dark:text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-1.5 font-semibold">
+                    <Radio className="w-2.5 h-2.5 text-[#0284c7] dark:text-cyan-400 animate-pulse" /> Suggested Query
                   </span>
-                  <p className="text-xs sm:text-sm text-foreground group-hover:text-ocean-cyan font-semibold leading-relaxed transition-colors line-clamp-2">
+                  <p className="text-xs sm:text-sm text-[#0c2340] dark:text-white group-hover:text-[#0284c7] dark:group-hover:text-cyan-300 font-semibold leading-relaxed transition-colors line-clamp-2">
                     {promptText}
                   </p>
-                  <div className="mt-2.5 pt-2 sm:mt-3.5 sm:pt-2.5 border-t border-border/30 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 group-hover:text-ocean-cyan font-mono font-medium">
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 group-hover:text-[#0284c7] dark:group-hover:text-cyan-300 font-mono font-medium">
                     <span>Execute query</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -474,7 +476,7 @@ function ChatContent() {
             </div>
 
             {/* Micro Trust Ribbon Anchoring the Empty State */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 text-[10px] sm:text-[11px] font-mono text-slate-600 dark:text-slate-400 font-medium w-full pb-2">
+            <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-slate-500 dark:text-slate-400 font-medium w-full pb-2">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                 ARGO Global Indian Array Live
@@ -495,59 +497,59 @@ function ChatContent() {
                 className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start w-full"}`}
               >
                 {msg.role === "user" ? (
-                  /* User Prompt Card */
-                  <div className="max-w-[85%] bg-surface-elevated border border-ocean-blue/30 text-foreground px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm leading-relaxed shadow-md font-medium">
+                  /* User Prompt Card in Deep Oceanic Blue */
+                  <div className="max-w-[85%] bg-[#0c2340] dark:bg-white/10 dark:backdrop-blur-xl border border-sky-400/20 text-white px-5 py-3.5 rounded-3xl rounded-tr-sm text-sm leading-relaxed shadow-md font-medium">
                     {msg.content}
                   </div>
                 ) : (
-                  /* Assistant Scientific Response */
+                  /* Assistant Scientific Response in Frosted Glass Card */
                   <div className="w-full flex items-start space-x-4">
-                    <div className="w-8 h-8 rounded-xl bg-surface-elevated border border-ocean-cyan/30 flex items-center justify-center text-ocean-cyan shrink-0 mt-1 shadow-[0_0_12px_rgba(6,182,212,0.2)]">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0284c7] to-[#06b6d4] flex items-center justify-center text-white shrink-0 mt-1 shadow-md shadow-cyan-500/20">
                       <Sparkles className="w-4 h-4 font-bold" />
                     </div>
 
-                    <div className="flex-1 min-w-0 space-y-4">
+                    <div className="flex-1 min-w-0 space-y-3">
                       {/* Markdown Body */}
-                      <div className="p-6 rounded-2xl bg-surface-card border border-border/80 text-foreground text-sm leading-relaxed shadow-sm space-y-4 font-sans">
+                      <div className="p-6 rounded-3xl bg-white/75 dark:bg-[#0a1222]/85 backdrop-blur-xl border border-white/90 dark:border-white/10 text-foreground text-sm leading-relaxed shadow-xs space-y-4 font-sans">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={{
                             table: ({ ...props }) => (
-                              <div className="overflow-x-auto my-4 rounded-xl border border-border/80 bg-surface-base">
+                              <div className="overflow-x-auto my-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50">
                                 <table className="w-full text-xs font-mono text-left" {...props} />
                               </div>
                             ),
                             thead: ({ ...props }) => (
-                              <thead className="bg-surface-elevated/80 border-b border-border/80 text-ocean-cyan uppercase font-bold" {...props} />
+                              <thead className="bg-sky-50/80 dark:bg-sky-950/50 border-b border-slate-200/80 dark:border-slate-800 text-[#0284c7] dark:text-cyan-300 uppercase font-bold" {...props} />
                             ),
                             th: ({ ...props }) => (
                               <th className="px-4 py-3 font-bold tracking-wider font-sans" {...props} />
                             ),
                             td: ({ ...props }) => (
-                              <td className="px-4 py-3 border-b border-border/30 text-slate-900 dark:text-slate-300 font-medium" {...props} />
+                              <td className="px-4 py-3 border-b border-slate-200/40 dark:border-slate-800/40 text-slate-800 dark:text-slate-300 font-medium" {...props} />
                             ),
                             tr: ({ ...props }) => (
-                              <tr className="hover:bg-surface-hover/40 transition-colors" {...props} />
+                              <tr className="hover:bg-sky-500/5 transition-colors" {...props} />
                             ),
                             p: ({ ...props }) => (
                               <p className="mb-3 last:mb-0 leading-relaxed font-normal" {...props} />
                             ),
                             h1: ({ ...props }) => (
-                              <h1 className="text-xl font-bold text-foreground mb-3 mt-4" {...props} />
+                              <h1 className="font-serif text-xl font-normal text-[#0c2340] dark:text-white mb-3 mt-4" {...props} />
                             ),
                             h2: ({ ...props }) => (
-                              <h2 className="text-lg font-bold text-foreground mb-2 mt-4" {...props} />
+                              <h2 className="font-serif text-lg font-normal text-[#0c2340] dark:text-white mb-2 mt-4" {...props} />
                             ),
                             h3: ({ ...props }) => (
-                              <h3 className="text-base font-semibold text-ocean-cyan mb-2 mt-3" {...props} />
+                              <h3 className="text-base font-semibold text-[#0284c7] dark:text-cyan-300 mb-2 mt-3" {...props} />
                             ),
                             strong: ({ ...props }) => (
-                              <strong className="font-bold text-foreground" {...props} />
+                              <strong className="font-bold text-[#0c2340] dark:text-white" {...props} />
                             ),
                             code: ({ node, inline, ...props }: any) => (
                               inline
-                                ? <code className="bg-surface-elevated px-1.5 py-0.5 rounded text-xs font-mono text-ocean-cyan border border-border/50 font-bold" {...props} />
-                                : <pre className="bg-surface-base p-4 rounded-xl border border-border/60 overflow-x-auto text-xs font-mono text-slate-900 dark:text-slate-300 my-3"><code {...props} /></pre>
+                                ? <code className="bg-sky-50 dark:bg-sky-950/60 px-1.5 py-0.5 rounded text-xs font-mono text-[#0284c7] dark:text-cyan-300 border border-sky-200/50 dark:border-sky-800/50 font-semibold" {...props} />
+                                : <pre className="bg-slate-900 text-slate-200 p-4 rounded-2xl border border-slate-800 overflow-x-auto text-xs font-mono my-3 shadow-inner"><code {...props} /></pre>
                             )
                           }}
                         >
@@ -556,32 +558,34 @@ function ChatContent() {
 
                         {/* Interactive Plotly Chart Attachment */}
                         {msg.graphJson && (
-                          <div className="mt-4 w-full rounded-xl overflow-hidden border border-border">
+                          <div className="mt-4 w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
                             <PlotlyChart data={msg.graphJson} title="Telemetry Depth Profile" />
                           </div>
                         )}
 
                         {/* Static Matplotlib Image Attachment */}
                         {msg.imagePath && !msg.graphJson && (
-                          <div className="mt-4 rounded-xl overflow-hidden border border-border bg-surface-base p-2">
-                            <img src={msg.imagePath} alt="Generated Physical Ocean Profile" className="w-full h-auto rounded-lg" />
+                          <div className="mt-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-2 shadow-sm">
+                            <img src={msg.imagePath} alt="Generated Physical Ocean Profile" className="w-full h-auto rounded-xl" />
                           </div>
                         )}
                       </div>
 
                       {/* Message Action Bar */}
-                      <div className="flex items-center justify-between px-2 text-xs font-mono text-slate-500">
+                      <div className="flex items-center justify-between px-3 text-xs font-mono text-slate-500">
                         <div className="flex items-center gap-2">
                           {msg.isError ? (
                             <>
-                              <Badge variant="standby" className="text-[9px] py-0 bg-amber-500/15 border-amber-500/30 text-amber-600 dark:text-amber-400 font-bold">
+                              <span className="text-[10px] py-0.5 px-2 rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400 font-semibold">
                                 Telemetry Pause
-                              </Badge>
+                              </span>
                               <span className="text-slate-500">Connection Interrupted</span>
                             </>
                           ) : (
                             <>
-                              <Badge variant="cyan" className="text-[9px] py-0">Synthesis Complete</Badge>
+                              <span className="text-[10px] py-0.5 px-2 rounded-full bg-sky-100 dark:bg-sky-950/80 border border-sky-200 dark:border-sky-800/50 text-[#0284c7] dark:text-cyan-400 font-semibold">
+                                Synthesis Complete
+                              </span>
                               <span>ARGO Verified</span>
                             </>
                           )}
@@ -600,7 +604,7 @@ function ChatContent() {
                                     handleSend(inputValue || "Calculate Mixed Layer Depth for WMO 2902217")
                                   }
                                 }}
-                                className="flex items-center gap-1 text-ocean-cyan hover:text-ocean-cyan/80 transition-colors p-1 cursor-pointer font-semibold"
+                                className="flex items-center gap-1 text-[#0284c7] hover:underline transition-colors p-1 cursor-pointer font-semibold"
                                 title="Retry query"
                               >
                                 <RotateCcw className="w-3.5 h-3.5" />
@@ -617,7 +621,7 @@ function ChatContent() {
                             {copiedId === msg.id ? (
                               <>
                                 <Check className="w-3.5 h-3.5 text-emerald-500" />
-                                <span className="text-emerald-500">Copied</span>
+                                <span className="text-emerald-500 font-semibold">Copied</span>
                               </>
                             ) : (
                               <>
@@ -645,8 +649,8 @@ function ChatContent() {
 
             {/* Intelligence Pipeline Stepper during Generation */}
             {isGenerating && streamStage && (
-              <div className="flex items-center gap-3 p-4 rounded-2xl bg-surface-card border border-ocean-cyan/30 text-xs font-mono text-ocean-cyan animate-pulse shadow-sm">
-                <div className="w-4 h-4 border-2 border-ocean-cyan border-t-transparent rounded-full animate-spin shrink-0" />
+              <div className="flex items-center gap-3 p-4 rounded-3xl bg-white/80 dark:bg-slate-900/80 border border-sky-300/80 dark:border-sky-800 text-xs font-mono text-[#0284c7] dark:text-cyan-400 animate-pulse shadow-sm">
+                <div className="w-4 h-4 border-2 border-[#0284c7] dark:border-cyan-400 border-t-transparent rounded-full animate-spin shrink-0" />
                 <span>{streamStage}</span>
               </div>
             )}
@@ -657,16 +661,16 @@ function ChatContent() {
 
       </div>
 
-      {/* Persistent Research Input Bar */}
-      <div className="shrink-0 border-t border-border/50 bg-surface-base/95 backdrop-blur-xl px-4 py-2.5 sm:py-3 md:px-6 md:py-3.5 z-20 transition-colors duration-300">
-        <div className="max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-1.5 sm:space-y-2">
+      {/* Persistent Research Input Bar in Floating Glass Pill */}
+      <div className="shrink-0 border-t border-slate-200/60 dark:border-white/10 bg-white/70 dark:bg-[#071326]/80 backdrop-blur-2xl px-4 py-3 md:px-6 md:py-3.5 z-20 transition-colors duration-300">
+        <div className="max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-2">
           
           <form
             onSubmit={(e) => {
               e.preventDefault()
               handleSend(inputValue)
             }}
-            className="relative flex items-end bg-surface-card border border-border rounded-2xl p-2 focus-within:border-ocean-cyan/60 focus-within:ring-2 focus-within:ring-ocean-cyan/20 transition-all shadow-md"
+            className="relative flex items-end bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-white/15 rounded-3xl p-2 focus-within:border-[#0284c7] focus-within:ring-2 focus-within:ring-[#0284c7]/20 transition-all shadow-md"
           >
             <textarea
               ref={textareaRef}
@@ -688,15 +692,15 @@ function ChatContent() {
               <button
                 type="button"
                 onClick={() => setIsThinkingMode(!isThinkingMode)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-mono font-medium transition-all cursor-pointer ${
                   isThinkingMode
-                    ? 'bg-ocean-cyan/15 border-ocean-cyan/40 text-ocean-cyan font-semibold'
-                    : 'bg-surface-elevated border-border text-slate-500 hover:text-foreground'
+                    ? 'bg-sky-100 dark:bg-sky-950/80 border-sky-300 dark:border-sky-800 text-[#0284c7] dark:text-cyan-300 font-semibold'
+                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 hover:text-foreground'
                 }`}
                 title="Deep Gemini 2.0 scientific reasoning chain"
               >
                 <Cpu className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Thinking</span>
+                <span className="hidden sm:inline">Thinking Mode</span>
               </button>
 
               {/* Submit or Abort Button */}
@@ -704,7 +708,7 @@ function ChatContent() {
                 <button
                   type="button"
                   onClick={() => abortControllerRef.current?.abort()}
-                  className="w-9 h-9 rounded-xl bg-red-500/15 border border-red-500/30 text-red-500 hover:bg-red-500/25 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-10 h-10 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-500 hover:bg-rose-500/25 flex items-center justify-center transition-colors cursor-pointer"
                   title="Stop generation"
                 >
                   <Square className="w-3.5 h-3.5 fill-current" />
@@ -713,7 +717,7 @@ function ChatContent() {
                 <button
                   type="submit"
                   disabled={!inputValue.trim()}
-                  className="w-9 h-9 rounded-xl bg-gradient-to-r from-ocean-cyan to-ocean-blue text-slate-950 font-bold flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] cursor-pointer active:scale-95"
+                  className="w-10 h-10 rounded-full bg-[#0c2340] hover:bg-[#07172b] dark:bg-white dark:text-[#0c2340] dark:hover:bg-slate-100 text-white font-bold flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95 shadow-md cursor-pointer"
                   title="Send query"
                 >
                   <ArrowRight className="w-4 h-4" />
@@ -722,7 +726,7 @@ function ChatContent() {
             </div>
           </form>
 
-          <div className="flex items-center justify-between px-2 text-[11px] font-mono text-slate-500">
+          <div className="flex items-center justify-between px-3 text-[11px] font-mono text-slate-500 dark:text-slate-400">
             <span>Press Enter to send &bull; Shift+Enter for new line</span>
             <span className="hidden sm:inline">ARGO Indian Ocean Telemetry &bull; Hybrid RAG SQL</span>
           </div>
