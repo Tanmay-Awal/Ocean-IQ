@@ -244,59 +244,65 @@ export default function ExplorePage() {
   return (
     <div className="space-y-8 animate-fade-in-up">
       
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-border/40">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-              <Database className="w-7 h-7 text-ocean-cyan" />
+      {/* Page Header in Modern Landing Page Style */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/60 dark:border-white/10">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#0284c7] dark:text-cyan-400 tracking-[0.2em] uppercase">
+            <span>DATASET EXPLORER & COMPARATIVE MATRIX</span>
+            <span className="w-6 h-[1.5px] bg-[#0284c7]/60 dark:bg-cyan-400/60" />
+          </div>
+          <div className="flex items-center gap-3">
+            <h1 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#0c2340] dark:text-white flex items-center gap-2.5">
+              <Database className="w-7 h-7 text-[#0284c7]" />
               Dataset Explorer & Export Matrix
             </h1>
-            <Badge variant="cyan">Telemetry Lab</Badge>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-100 dark:bg-sky-950/80 text-[#0284c7] dark:text-cyan-300 border border-sky-200 dark:border-sky-800/50 shadow-xs">
+              Telemetry Lab
+            </span>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-300 font-normal max-w-2xl">
             Compare analytical thermodynamic parameters between autonomous ARGO floats and export high-density CTD records.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <Link href="/chat">
-            <Button variant="cyan" size="sm" className="text-xs shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Ask Aqua AI
-            </Button>
+            <button className="h-10 px-5 rounded-full bg-[#0c2340] hover:bg-[#07172b] dark:bg-white dark:text-[#0c2340] dark:hover:bg-slate-100 text-white text-xs sm:text-sm font-medium flex items-center gap-2 shadow-md shadow-black/10 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-300 dark:text-[#0284c7]" />
+              <span>Ask Aqua AI</span>
+            </button>
           </Link>
         </div>
       </div>
 
       {/* SECTION 1: FLOAT COMPARISON MATRIX */}
-      <Card variant="elevated" className="card-hover-lift">
-        <CardHeader className="border-b border-border/40 pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-6 shadow-[0_10px_30px_rgba(2,132,199,0.06)] space-y-6">
+        <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-ocean-blue/20 border border-ocean-blue/30 flex items-center justify-center text-ocean-cyan">
+              <div className="w-10 h-10 rounded-2xl bg-sky-100/80 dark:bg-sky-950/60 border border-sky-200/60 dark:border-sky-800/50 flex items-center justify-center text-[#0284c7] dark:text-cyan-300 shadow-xs">
                 <ArrowRightLeft className="w-5 h-5" />
               </div>
               <div>
-                <CardTitle className="text-lg">Thermodynamic Comparison Matrix</CardTitle>
-                <CardDescription>
+                <h3 className="text-lg font-bold text-[#0c2340] dark:text-white tracking-tight">Thermodynamic Comparison Matrix</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Side-by-side analysis of ocean temperature, salinity, Mixed Layer Depth, and thermocline gradients
-                </CardDescription>
+                </p>
               </div>
             </div>
 
             {(statsA || statsB) && (
               <Link href={`/chat?query=${encodeURIComponent(`Compare thermodynamic parameters, Mixed Layer Depth, and salinity between float ${floatA} and float ${floatB}`)}`}>
-                <Button variant="outline" size="sm" className="text-xs gap-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  <Sparkles className="w-3.5 h-3.5 text-ocean-cyan" />
+                <button className="h-9 px-4 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/80 dark:border-white/10 text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-[#0284c7] dark:hover:text-cyan-300 flex items-center gap-1.5 shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+                  <Sparkles className="w-3.5 h-3.5 text-[#0284c7] dark:text-cyan-300" />
                   <span>Synthesize in Aqua AI</span>
-                </Button>
+                </button>
               </Link>
             )}
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="p-6 space-y-6">
+        <div className="space-y-6">
           
           {/* Comparison Controls */}
           <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-end">
@@ -475,39 +481,39 @@ export default function ExplorePage() {
               </table>
             </div>
           ) : (
-            <div className="p-8 text-center rounded-xl bg-surface-elevated/40 border border-border text-slate-500 text-xs font-mono">
+            <div className="p-8 text-center rounded-2xl bg-white/50 dark:bg-slate-950/50 border border-slate-200/60 dark:border-white/10 text-slate-500 text-xs font-mono">
               {floats.length === 0
                 ? "No autonomous floats are currently registered in the database."
                 : "Select two floats and click “Run Comparative Analysis” to generate the thermodynamic delta table."}
             </div>
           )}
 
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* SECTION 2: LIVE TELEMETRY DATA PREVIEW */}
-      <Card variant="elevated" className="card-hover-lift">
-        <CardHeader className="border-b border-border/40 pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-6 shadow-[0_10px_30px_rgba(2,132,199,0.06)] space-y-4">
+        <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-500">
+              <div className="w-10 h-10 rounded-2xl bg-purple-100/80 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/50 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-xs">
                 <TableIcon className="w-5 h-5" />
               </div>
               <div>
-                <CardTitle className="text-lg">Live Telemetry Soundings Preview</CardTitle>
-                <CardDescription>
+                <h3 className="text-lg font-bold text-[#0c2340] dark:text-white tracking-tight">Live Telemetry Soundings Preview</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Inspect raw pressure, temperature, and salinity records from the Neon PostgreSQL database
-                </CardDescription>
+                </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
                 <span className="hidden sm:inline">Float:</span>
                 <select
                   value={selectedPreviewFloat}
                   onChange={(e) => setSelectedPreviewFloat(e.target.value)}
-                  className="h-8 px-2.5 rounded-lg bg-surface-card border border-border text-xs font-mono text-foreground focus:outline-none shadow-sm cursor-pointer max-w-[200px]"
+                  className="h-9 px-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 text-xs font-mono text-foreground focus:outline-none shadow-xs cursor-pointer max-w-[200px]"
                 >
                   <option value="all">All Floats (Balanced)</option>
                   {floats.map((f) => (
@@ -518,7 +524,7 @@ export default function ExplorePage() {
                 </select>
               </div>
 
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
                 <span className="hidden sm:inline">Rows:</span>
                 <select
                   value={pageSize}
@@ -526,28 +532,26 @@ export default function ExplorePage() {
                     setPageSize(Number(e.target.value))
                     setCurrentPage(1)
                   }}
-                  className="h-8 px-2.5 rounded-lg bg-surface-card border border-border text-xs font-mono text-foreground focus:outline-none shadow-sm cursor-pointer"
+                  className="h-9 px-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 text-xs font-mono text-foreground focus:outline-none shadow-xs cursor-pointer"
                 >
                   <option value={10}>10 rows</option>
                   <option value={25}>25 rows</option>
                   <option value={50}>50 rows</option>
                 </select>
               </div>
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
                 onClick={fetchPreviewData}
                 disabled={loadingPreview}
-                className="h-8 text-xs gap-1 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="h-9 px-3.5 rounded-xl bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/80 dark:border-white/10 text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-[#0284c7] flex items-center gap-1.5 shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
               >
-                <RefreshCw className={`w-3 h-3 ${loadingPreview ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingPreview ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
-              </Button>
+              </button>
             </div>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="p-0">
+        <div className="pt-2">
           {loadingPreview ? (
             <div className="p-12 text-center text-slate-500 font-mono text-xs">
               <div className="w-5 h-5 border-2 border-ocean-cyan border-t-transparent rounded-full animate-spin mx-auto mb-2" />
@@ -670,26 +674,26 @@ export default function ExplorePage() {
               </div>
             </>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* SECTION 3: ADVANCED BULK CSV EXPORT HUB */}
-      <Card variant="elevated" className="card-hover-lift">
-        <CardHeader className="border-b border-border/40 pb-4">
+      <div className="rounded-3xl bg-white/70 dark:bg-[#0a1222]/80 backdrop-blur-xl border border-white/90 dark:border-white/10 p-6 shadow-[0_10px_30px_rgba(2,132,199,0.06)] space-y-6">
+        <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-xs">
               <Download className="w-5 h-5" />
             </div>
             <div>
-              <CardTitle className="text-lg">Production CSV Export Hub</CardTitle>
-              <CardDescription>
+              <h3 className="text-lg font-bold text-[#0c2340] dark:text-white tracking-tight">Production CSV Export Hub</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Download clean, calibrated oceanographic datasets for offline Python, MATLAB, or ODV modeling
-              </CardDescription>
+              </p>
             </div>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="p-6 space-y-6">
+        <div className="space-y-6">
           
           {/* Float Selection (Multi) */}
           <div className="space-y-2 relative">
@@ -701,11 +705,11 @@ export default function ExplorePage() {
                 <button
                   type="button"
                   onClick={selectAllFloats}
-                  className="text-ocean-cyan hover:underline cursor-pointer"
+                  className="text-[#0284c7] hover:underline cursor-pointer font-semibold"
                 >
                   Select All
                 </button>
-                <span className="text-slate-400">|</span>
+                <span className="text-slate-300 dark:text-slate-700">|</span>
                 <button
                   type="button"
                   onClick={clearSelection}
@@ -717,10 +721,10 @@ export default function ExplorePage() {
             </div>
 
             <div 
-              className="w-full bg-surface-card border border-border rounded-xl px-4 py-3 text-sm text-foreground cursor-pointer flex justify-between items-center hover:border-slate-500 transition-colors shadow-sm"
+              className="w-full bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 rounded-2xl px-4 py-3 text-sm text-foreground cursor-pointer flex justify-between items-center hover:border-slate-400 transition-colors shadow-xs"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-              <span className={exportSelection.length ? "text-foreground font-mono font-medium" : "text-slate-500 font-mono"}>
+              <span className={exportSelection.length ? "text-foreground font-mono font-semibold text-xs" : "text-slate-500 font-mono text-xs"}>
                 {exportSelection.length 
                   ? `${exportSelection.length} floats selected (${exportSelection.join(", ")})` 
                   : "All Available Floats (Global Export)"}
@@ -729,7 +733,7 @@ export default function ExplorePage() {
             </div>
 
             {dropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-border rounded-xl shadow-2xl max-h-64 overflow-y-auto z-30 p-2 space-y-1">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-[#071326]/95 backdrop-blur-2xl border border-slate-200 dark:border-white/15 rounded-2xl shadow-2xl max-h-64 overflow-y-auto z-30 p-2 space-y-1">
                 {floats.length === 0 ? (
                   <div className="p-4 text-center text-xs text-slate-500 font-mono">
                     No autonomous floats registered in database
@@ -739,13 +743,13 @@ export default function ExplorePage() {
                     <div 
                       key={`export-${f.wmo}`}
                       onClick={() => toggleExportSelection(f.wmo)}
-                      className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-surface-hover cursor-pointer transition-colors"
+                      className="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-sky-50 dark:hover:bg-sky-950/40 cursor-pointer transition-colors"
                     >
-                      <div className={`w-4 h-4 rounded border flex items-center justify-center ${exportSelection.includes(f.wmo) ? 'bg-ocean-cyan border-ocean-cyan' : 'border-slate-400 dark:border-slate-700 bg-surface-card'}`}>
-                        {exportSelection.includes(f.wmo) && <Check className="w-3 h-3 text-slate-950 font-bold" />}
+                      <div className={`w-4 h-4 rounded-md border flex items-center justify-center ${exportSelection.includes(f.wmo) ? 'bg-[#0284c7] border-[#0284c7]' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900'}`}>
+                        {exportSelection.includes(f.wmo) && <Check className="w-3 h-3 text-white font-bold" />}
                       </div>
-                      <span className="text-xs font-mono text-foreground">
-                        WMO {f.wmo} <span className="text-slate-500 ml-2 font-sans">({f.region})</span>
+                      <span className="text-xs font-mono text-foreground font-medium">
+                        WMO {f.wmo} <span className="text-slate-500 ml-2 font-sans font-normal">({f.region})</span>
                       </span>
                     </div>
                   ))
@@ -757,7 +761,7 @@ export default function ExplorePage() {
           {/* Date Range Filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-mono font-semibold text-slate-800 dark:text-slate-400 uppercase tracking-wider">
+              <label className="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Start Date (Optional)
               </label>
               <div className="relative">
@@ -767,13 +771,13 @@ export default function ExplorePage() {
                   value={startDate}
                   max={todayDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full h-11 bg-surface-card border border-border rounded-xl pl-10 pr-4 text-xs font-mono text-foreground focus:outline-none focus:border-emerald-500/50 cursor-pointer shadow-sm"
+                  className="w-full h-11 bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 rounded-2xl pl-10 pr-4 text-xs font-mono text-foreground focus:outline-none focus:border-emerald-500/50 cursor-pointer shadow-xs"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-mono font-semibold text-slate-800 dark:text-slate-400 uppercase tracking-wider">
+              <label className="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 End Date (Optional)
               </label>
               <div className="relative">
@@ -783,31 +787,30 @@ export default function ExplorePage() {
                   value={endDate}
                   max={todayDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full h-11 bg-surface-card border border-border rounded-xl pl-10 pr-4 text-xs font-mono text-foreground focus:outline-none focus:border-emerald-500/50 cursor-pointer shadow-sm"
+                  className="w-full h-11 bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 rounded-2xl pl-10 pr-4 text-xs font-mono text-foreground focus:outline-none focus:border-emerald-500/50 cursor-pointer shadow-xs"
                 />
               </div>
             </div>
           </div>
 
           {/* Export Action Bar */}
-          <div className="pt-4 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-slate-700 dark:text-slate-400 font-mono font-medium">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-mono font-medium">
               Output includes WMO, date, cycle, coordinates, temperature, pressure, salinity.
             </p>
 
-            <Button
+            <button
               onClick={handleExport}
               disabled={isExporting}
-              isLoading={isExporting}
-              className="w-full sm:w-auto px-8 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] active:scale-[0.98] transition-all"
+              className="w-full sm:w-auto h-11 px-8 rounded-full bg-[#0c2340] hover:bg-[#07172b] dark:bg-white dark:text-[#0c2340] dark:hover:bg-slate-100 text-white font-medium text-xs sm:text-sm shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Generate CSV Bundle
-            </Button>
+              <Download className="w-4 h-4 text-emerald-400 dark:text-emerald-600" />
+              <span>{isExporting ? "Generating Bundle..." : "Generate CSV Bundle"}</span>
+            </button>
           </div>
 
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
     </div>
   )

@@ -53,7 +53,7 @@ class DataService:
                             FROM argo_profiles
                             WHERE latitude IS NOT NULL AND longitude IS NOT NULL
                             ORDER BY wmo, profile_date DESC
-                        """)
+                        """)    
                         for fn, pid, lat, lon in cur.fetchall():
                             try:
                                 lat_f = float(lat)

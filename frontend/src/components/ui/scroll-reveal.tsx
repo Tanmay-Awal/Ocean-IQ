@@ -19,14 +19,14 @@ export function ScrollReveal({
   duration = 600,
   distance = 24,
   className = "",
-  threshold = 0.1
+  threshold = 0.05
 }: ScrollRevealProps) {
   const [isVisible, setIsVisible] = useState(false)
   const elementRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
     if (prefersReducedMotion) {
       setIsVisible(true)
       return
@@ -39,7 +39,7 @@ export function ScrollReveal({
           observer.disconnect()
         }
       },
-      { threshold }
+      { threshold, rootMargin: "0px 0px -40px 0px" }
     )
 
     if (elementRef.current) {
@@ -56,11 +56,11 @@ export function ScrollReveal({
       case "down":
         return `translate3d(0, -${distance}px, 0)`
       case "left":
-        return `translate3d(${distance}px, 0, 0)`
-      case "right":
         return `translate3d(-${distance}px, 0, 0)`
+      case "right":
+        return `translate3d(${distance}px, 0, 0)`
       case "zoom":
-        return "scale3d(0.94, 0.94, 1)"
+        return "scale3d(0.95, 0.95, 1)"
       case "fade":
       default:
         return "translate3d(0, 0, 0)"

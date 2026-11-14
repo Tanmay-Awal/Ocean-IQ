@@ -33,3 +33,36 @@ graphs/*.png
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Agents configuration & memory
+.agents/
+
+# Temporary image processing scripts & scratch files
+clean_section3*.py
+expand_section3_bg.py
+coons_patch.py
+*.jpg
+*.jpeg
+shark_mask.png
+turtle_area.png
+turtle_check.png
+turtle_inspection.png
+orig_turtle_check.png
+
+# Temporary public inspection images & raw backups
+frontend/public/check_*
+frontend/public/test_*
+frontend/public/s3_*
+frontend/public/s4_*
+frontend/public/orig_*
+frontend/public/sec4_*
+frontend/public/*-raw-backup.png
+frontend/public/section3*
+frontend/public/raw_*
+frontend/public/pure_*
+frontend/public/shark_*
+frontend/public/last_sec_*
+frontend/public/line_crop_*
+frontend/public/curr_sec4_preview.jpg
+frontend/public/user_*
+frontend/public/section-4-bg-original.png
