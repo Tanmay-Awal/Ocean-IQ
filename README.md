@@ -1,5 +1,6 @@
 # 🌊 OceanIQ: AI-Powered Oceanographic Data Analytics & RAG Dashboard
 
+[![CI](https://github.com/Tanmay-Awal/OceanIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/Tanmay-Awal/OceanIQ/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-16.x-black?logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -158,8 +159,8 @@ OceanIQ/
 
 #### 1. Clone the repository and navigate to the project directory:
 ```bash
-git clone https://github.com/Tanmay-Awal/floatchat-ai.git
-cd floatchat-ai
+git clone https://github.com/Tanmay-Awal/OceanIQ.git
+cd OceanIQ
 ```
 
 #### 2. Backend Setup:
@@ -176,12 +177,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Download the local Sentence-Transformers ONNX model for vector fallbacks:
+Copy the environment template and configure your keys:
 ```bash
-python download_model.py
+cp .env.example .env
 ```
-
-Configure your environment variables in `backend/.env` (see the table below).
 
 #### 3. Frontend Setup:
 Navigate into the `frontend` directory and install npm packages:
@@ -400,18 +399,19 @@ OceanIQ stores its processed oceanographic data in a PostgreSQL schema optimized
 
 ## 🧪 Testing
 
-The backend testing suite targets the processing functions and mathematical engines:
+The project includes an automated **Pytest** test suite with 12 unit and integration tests covering API endpoints, rate limiting, and core mathematical algorithms:
 
-* Run backend unit tests:
-  ```bash
-  cd backend
-  python test_db.py
-  ```
+```bash
+cd backend
+pytest tests/ -v
+```
 
-* Verify PostgreSQL and ChromaDB indexing:
-  ```bash
-  python -c "from app.services.data_service import DataService; print(DataService.get_floats_metadata())"
-  ```
+### What is tested:
+- **System Health:** Verifies `/`, `/health`, and `/api/health` return valid JSON contracts.
+- **Input Validation:** Verifies empty queries return 400 Bad Request.
+- **LLM Synthesis Contract:** Mocks AI engine responses to verify attribution structure without incurring API costs.
+- **Rate Limiting:** Confirms that traffic exceeding `RATE_LIMIT_MAX_REQUESTS` receives HTTP 429 Too Many Requests.
+- **Oceanographic Calculations:** Validates `compute_mixed_layer_depth`, `compute_thermocline_depth`, and aggregations against edge-case data (missing cycle numbers, single measurements, NaN values).
 
 ---
 
