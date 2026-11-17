@@ -13,10 +13,7 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
-POSTGRES_URL = os.getenv(
-    "POSTGRES_URL",
-    "postgresql://neondb_owner:npg_IJSRXYiFGc75@ep-sparkling-butterfly-adch5qkf-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-)
+POSTGRES_URL = os.getenv("POSTGRES_URL", "")
 
 # ---------------------------------------------------------------------------
 # LLM Providers
@@ -49,7 +46,7 @@ ERDDAP_DATASET_ID = os.getenv("ERDDAP_DATASET_ID", "ArgoFloats")
 # ---------------------------------------------------------------------------
 FLASK_PORT = int(os.getenv("FLASK_PORT", "5000"))
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", "true").lower() == "true"
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174").split(",")
+CORS_ORIGINS = [orig.strip() for orig in os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173").split(",") if orig.strip()]
 
 # Chat memory limit
 CHAT_MEMORY_LIMIT = int(os.getenv("CHAT_MEMORY_LIMIT", "20"))

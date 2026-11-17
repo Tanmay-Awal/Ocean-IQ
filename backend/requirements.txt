@@ -15,3 +15,5 @@ gunicorn
 matplotlib
 seaborn
 huggingface_hub
+pytest
+pytest-mock
