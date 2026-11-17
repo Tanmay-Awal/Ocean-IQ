@@ -11,10 +11,12 @@ from __future__ import annotations
 import logging
 import os
 import pandas as pd
+import time
+from collections import defaultdict
 from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 
-from app.config import FLASK_PORT, FLASK_DEBUG, GRAPHS_DIR
+from app.config import FLASK_PORT, FLASK_DEBUG, GRAPHS_DIR, CORS_ORIGINS
 from app.services.intelligence_engine import IntelligenceEngine
 from app.services.data_service import DataService
 
@@ -23,8 +25,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-# Enable CORS for all origins, allowing typical React development servers
-CORS(app, resources={r"/api/*": {"origins": "*"}, r"/graphs/*": {"origins": "*"}})
+# Enable CORS for configured origins (or all in debug mode)
+allowed_origins = "*" if FLASK_DEBUG else CORS_ORIGINS
+CORS(app, resources={r"/api/*": {"origins": allowed_origins}, r"/graphs/*": {"origins": allowed_origins}})
+
+# In-memory sliding-window rate limiter (prevents LLM API exhaustion & spam)
+RATE_LIMIT_WINDOW = 60  # seconds
+RATE_LIMIT_MAX_REQUESTS = 30  # requests per window per IP
+_ip_request_timestamps: dict[str, list[float]] = defaultdict(list)
+
+
+def is_rate_limited(ip: str) -> bool:
+    """Sliding-window rate limiter per client IP."""
+    now = time.time()
+    cutoff = now - RATE_LIMIT_WINDOW
+    timestamps = [t for t in _ip_request_timestamps[ip] if t > cutoff]
+    if len(timestamps) >= RATE_LIMIT_MAX_REQUESTS:
+        return True
+    timestamps.append(now)
+    _ip_request_timestamps[ip] = timestamps
+    return False
 
 # Ensure graphs directory exists
 os.makedirs(os.path.abspath(GRAPHS_DIR), exist_ok=True)
@@ -108,6 +128,13 @@ def get_dashboard_stats():
 def chat():
     """Main conversational API endpoint."""
     try:
+        client_ip = request.remote_addr or "127.0.0.1"
+        if is_rate_limited(client_ip):
+            return jsonify({
+                "error": "Rate limit exceeded. Please wait a moment before sending more queries.",
+                "retry_after": 60
+            }), 429
+
         body = request.get_json() or {}
         query = body.get("query")
         thinking_mode = body.get("isThinkingMode", False)
@@ -142,6 +169,13 @@ def chat():
 def chat_stream():
     """Streaming conversational endpoint using Server-Sent Events (SSE)."""
     try:
+        client_ip = request.remote_addr or "127.0.0.1"
+        if is_rate_limited(client_ip):
+            return jsonify({
+                "error": "Rate limit exceeded. Please wait a moment before sending more queries.",
+                "retry_after": 60
+            }), 429
+
         body = request.get_json() or {}
         query = body.get("query")
         thinking_mode = body.get("isThinkingMode", False)
@@ -170,10 +204,10 @@ def get_float_stats(wmo):
     try:
         from app.services.analysis_service import AnalysisService
         
-        # Fetch total raw rows from db regardless of temperature filters
+        # Fetch total raw rows from db with parameterized query (prevents SQL injection)
         with DataService.get_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute(f"SELECT COUNT(*) FROM argo_profiles WHERE wmo = '{wmo}'")
+                cur.execute("SELECT COUNT(*) FROM argo_profiles WHERE wmo = %s", (str(wmo),))
                 total_raw_profiles = cur.fetchone()[0]
 
         data_res = DataService.get_detailed_data([wmo], limit=5000)
