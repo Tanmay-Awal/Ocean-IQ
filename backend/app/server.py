@@ -25,8 +25,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-# Enable CORS for configured origins (or all in debug mode)
-allowed_origins = "*" if FLASK_DEBUG else CORS_ORIGINS
+# Enable CORS for configured origins (defaults to '*' to support deployed frontend domains)
+allowed_origins = "*" if (FLASK_DEBUG or "*" in CORS_ORIGINS) else CORS_ORIGINS
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}, r"/graphs/*": {"origins": allowed_origins}})
 
 # In-memory sliding-window rate limiter (prevents LLM API exhaustion & spam)

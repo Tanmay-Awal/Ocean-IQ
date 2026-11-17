@@ -359,15 +359,28 @@ class DataService:
         if cls._metadata_cache is not None and (time.time() - cls._metadata_cache_time) < 3600:
             return cls._metadata_cache
             
+        # If POSTGRES_URL is unconfigured, immediately serve from on-disk cache
+        if not POSTGRES_URL and os.path.exists(cache_file):
+            try:
+                with open(cache_file, "r") as f:
+                    cached_data = json.load(f)
+                    if cached_data:
+                        cls._metadata_cache = cached_data
+                        cls._metadata_cache_time = time.time()
+                        return cached_data
+            except Exception as e:
+                logger.warning(f"Failed to read cache file: {e}")
+
         # Check on-disk cache next (valid for 24 hours)
         if os.path.exists(cache_file):
             if (time.time() - os.path.getmtime(cache_file)) < 86400:
                 try:
                     with open(cache_file, "r") as f:
                         cached_data = json.load(f)
-                        cls._metadata_cache = cached_data
-                        cls._metadata_cache_time = time.time()
-                        return cached_data
+                        if cached_data:
+                            cls._metadata_cache = cached_data
+                            cls._metadata_cache_time = time.time()
+                            return cached_data
                 except Exception as e:
                     logger.warning(f"Failed to read cache file: {e}")
             
@@ -471,7 +484,18 @@ class DataService:
                         
                     return result
         except Exception as e:
-            logger.error(f"Error fetching floats metadata: {e}")
+            logger.warning(f"Database query for float metadata unavailable ({e}). Falling back to on-disk cache.")
+            if os.path.exists(cache_file):
+                try:
+                    with open(cache_file, "r") as f:
+                        cached_data = json.load(f)
+                        if cached_data:
+                            cls._metadata_cache = cached_data
+                            cls._metadata_cache_time = time.time()
+                            logger.info("Successfully served float metadata from on-disk cache fallback.")
+                            return cached_data
+                except Exception as cache_err:
+                    logger.error(f"Failed to load fallback cache: {cache_err}")
             return []
 
     @classmethod

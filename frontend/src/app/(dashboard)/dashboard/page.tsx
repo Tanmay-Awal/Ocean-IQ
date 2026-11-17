@@ -164,9 +164,18 @@ function AreaCustomTooltip({ active, payload, label, wmo1, wmo2 }: any) {
   return null
 }
 
+const FALLBACK_FLOATS_DATA = [
+  { wmo: "1902677", measurements_count: 9073, first_profile: "2003-01-01 00:00:00", last_profile: "2026-02-27 04:26:33+00", avg_latitude: -10.2118, avg_longitude: 79.4020, avg_temp: 11.0, avg_sal: 34.7, region: "Southern Indian Ocean", active: "Active" },
+  { wmo: "2900230", measurements_count: 7168, first_profile: "2003-01-01 00:00:00", last_profile: "2025-09-20 00:00:00", avg_latitude: -2.1155, avg_longitude: 72.3982, avg_temp: 15.7, avg_sal: 35.0, region: "Southern Arabian Sea", active: "Active" },
+  { wmo: "2900765", measurements_count: 5793, first_profile: "2003-01-01 00:00:00", last_profile: "2025-09-20 00:00:00", avg_latitude: 15.3904, avg_longitude: 88.1535, avg_temp: 15.5, avg_sal: 34.5, region: "Northern Bay of Bengal", active: "Active" },
+  { wmo: "2901092", measurements_count: 13182, first_profile: "2003-01-01 00:00:00", last_profile: "2025-09-20 00:00:00", avg_latitude: -0.7668, avg_longitude: 90.2090, avg_temp: 16.1, avg_sal: 34.8, region: "Southern Bay of Bengal", active: "Active" },
+  { wmo: "2902210", measurements_count: 214284, first_profile: "2003-01-01 00:00:00", last_profile: "2025-09-20 00:00:00", avg_latitude: 18.3435, avg_longitude: 65.6906, avg_temp: 10.9, avg_sal: 35.5, region: "Northern Arabian Sea", active: "Active" },
+  { wmo: "2902217", measurements_count: 82899, first_profile: "2003-01-01 00:00:00", last_profile: "2025-09-20 00:00:00", avg_latitude: 17.3239, avg_longitude: 89.7645, avg_temp: 15.5, avg_sal: 34.5, region: "Northern Bay of Bengal", active: "Active" }
+]
+
 export default function DashboardPage() {
   const { isDark } = useTheme()
-  const [data, setData] = useState<any[]>([])
+  const [data, setData] = useState<any[]>(FALLBACK_FLOATS_DATA)
   const [profileCurves, setProfileCurves] = useState<any>(null)
   const [dashboardStats, setDashboardStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
