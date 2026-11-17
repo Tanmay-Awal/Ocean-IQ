@@ -64,14 +64,15 @@ class AnalysisService:
         # Sort by pressure (depth)
         df_sorted = df.dropna(subset=["temperature", "pressure"]).sort_values("pressure")
         
-        # Group by cycle_number if populated, otherwise group by profile_date (daily)
-        # Fast Vectorized Approach
-        has_cyc = df_sorted["cycle_number"].notna() & (df_sorted["cycle_number"].astype(str).str.strip() != "") & (df_sorted["cycle_number"].astype(str).str.strip().str.lower() != "none")
-        df_sorted["group_id"] = np.where(
-            has_cyc,
-            "cycle_" + df_sorted["cycle_number"].astype(str),
-            "date_" + df_sorted["profile_date"].astype(str).str[:10]
-        )
+        # Group by cycle_number if populated, otherwise group by profile_date (daily), fallback to single
+        if "cycle_number" in df_sorted.columns:
+            has_cyc = df_sorted["cycle_number"].notna() & (df_sorted["cycle_number"].astype(str).str.strip() != "") & (df_sorted["cycle_number"].astype(str).str.strip().str.lower() != "none")
+            fallback_group = "date_" + df_sorted["profile_date"].astype(str).str[:10] if "profile_date" in df_sorted.columns else "profile_default"
+            df_sorted["group_id"] = np.where(has_cyc, "cycle_" + df_sorted["cycle_number"].astype(str), fallback_group)
+        elif "profile_date" in df_sorted.columns:
+            df_sorted["group_id"] = "date_" + df_sorted["profile_date"].astype(str).str[:10]
+        else:
+            df_sorted["group_id"] = "profile_single"
         groups = df_sorted.groupby("group_id")
         
         for g_name, profile_df in groups:
@@ -128,13 +129,15 @@ class AnalysisService:
             
         df_sorted = df.dropna(subset=["temperature", "pressure"]).sort_values("pressure")
         
-        # Group by cycle_number if populated, otherwise group by profile_date (daily)
-        has_cyc = df_sorted["cycle_number"].notna() & (df_sorted["cycle_number"].astype(str).str.strip() != "") & (df_sorted["cycle_number"].astype(str).str.strip().str.lower() != "none")
-        df_sorted["group_id"] = np.where(
-            has_cyc,
-            "cycle_" + df_sorted["cycle_number"].astype(str),
-            "date_" + df_sorted["profile_date"].astype(str).str[:10]
-        )
+        # Group by cycle_number if populated, otherwise group by profile_date (daily), fallback to single
+        if "cycle_number" in df_sorted.columns:
+            has_cyc = df_sorted["cycle_number"].notna() & (df_sorted["cycle_number"].astype(str).str.strip() != "") & (df_sorted["cycle_number"].astype(str).str.strip().str.lower() != "none")
+            fallback_group = "date_" + df_sorted["profile_date"].astype(str).str[:10] if "profile_date" in df_sorted.columns else "profile_default"
+            df_sorted["group_id"] = np.where(has_cyc, "cycle_" + df_sorted["cycle_number"].astype(str), fallback_group)
+        elif "profile_date" in df_sorted.columns:
+            df_sorted["group_id"] = "date_" + df_sorted["profile_date"].astype(str).str[:10]
+        else:
+            df_sorted["group_id"] = "profile_single"
         groups = df_sorted.groupby("group_id")
         
         results = []
